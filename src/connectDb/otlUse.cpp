@@ -9,9 +9,9 @@ void COtlUse::select()
             ); 
 
         int user_id;
-        unsigned char account[6];
-        unsigned char password[16];
-        unsigned char user_name[255];
+        char account[6];
+        char password[16];
+        char user_name[255];
         int16_t user_age;
 
         while(!ostream1.eof())
@@ -53,19 +53,36 @@ int COtlUse::olt_init()
 }
 
 
-int COtlUse::select_user_exist(string account)
+int COtlUse::select_user_exist(string account,string password,CUser &myUser)
 {
     if(_connect_on()==-1) return -1;
     try{
-        string sqlStr="select * from user_info_table where account = '"+account+"'";
-        // std::cout<<sqlStr<<std::endl;
-        otl_stream ostream1(500, sqlStr.c_str(),_db); 
+        char sqlStr[128]={0};
+        sprintf(sqlStr,"select * from user_info_table where account = '%s'",account.c_str());
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(500, sqlStr,_db); 
 
-        while(!ostream1.eof())
+        int id;
+        char act[7];
+        char pwd[16];
+        char name[255];
+        int16_t age;
+        while(!ostream.eof())
         { 
-            return 1;
+            ostream>>id;
+            ostream>>act;
+            ostream>>pwd;
+            ostream>>name;
+            ostream>>age;
+            if(strcmp(pwd,password.c_str())!=0)
+            {
+                return 1; //用户密码错误
+            }
+            myUser.set_user_info(id,act,pwd,name,age);
+            return 0; //用户登录成功
+            
         }
-        return 2;
+        return 2; //用户不存在
     }
     catch(otl_exception& p)
     {

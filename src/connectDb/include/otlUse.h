@@ -7,8 +7,10 @@
 
 #include <k_total_head.h>
 #include "otlv4.h" // include the OTL 4.0 header file
+#include "user.h"
 
 #include <vector>
+
 using namespace std;
 
 class COtlUse
@@ -22,7 +24,7 @@ public:
 
     // 判断用户是否存在
     // 错误-1，存在1，不存在2
-    int select_user_exist(string account);
+    int select_user_exist(string account,string password,CUser &myUser);
 
     // vector<
     // 获取上一次操作的错误消息
