@@ -19,14 +19,16 @@ public:
     COtlUse();
     ~COtlUse();
 
-    void select();
     int olt_init();
 
     // 判断用户是否存在
     // 错误-1，存在1，不存在2
     int select_user_exist(string account,string password,CUser &myUser);
 
-    // vector<
+    // 获取用户的好友列表
+    // return 好友数量，错误返回-1
+    int get_user_friends(int id,vector<CUser> &friendLists);
+
     // 获取上一次操作的错误消息
     string get_errmsg();
 

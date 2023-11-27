@@ -1,41 +1,5 @@
 #include "./include/otlUse.h"
 
-void COtlUse::select()
-{ 
-    try{
-        otl_stream ostream1(500, // buffer size
-            "select * from user_info_table;",// SELECT statement
-            _db // connect object
-            ); 
-
-        int user_id;
-        char account[6];
-        char password[16];
-        char user_name[255];
-        int16_t user_age;
-
-        while(!ostream1.eof())
-        { // while not end-of-data
-            //ostream1>>id>>user>>name;
-            ostream1>>user_id;
-            ostream1>>account;
-            ostream1>>password;
-            ostream1>>user_name;
-            ostream1>>user_age;
-            cout<<"id="<<user_id<<endl;
-            cout<<"age="<<user_age<<endl;
-            cout<<"name="<<user_name<<endl;
-        }
-    }
-    catch(otl_exception& p)
-    { // intercept OTL exceptions
-        cout<<"otl_exception:"<<endl;
-        cerr<<p.msg<<endl; // print out error message
-        cerr<<p.stm_text<<endl; // print out SQL that caused the error
-        cerr<<p.var_info<<endl; // print out the variable that caused the error
-    }
-}
-
 int COtlUse::olt_init()
 {
     otl_connect::otl_initialize(); // initialize the database API environment
@@ -90,6 +54,40 @@ int COtlUse::select_user_exist(string account,string password,CUser &myUser)
         return -1;
     }
 }
+int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[512]={0};
+        char sqlFormat[512]="SELECT info.user_id,info.account,info.pwd,info.user_name,info.user_age \
+                        FROM user_info_table as info \
+                        INNER JOIN user_friend_info_table as friend \
+                            on info.user_id=friend.user_friend_id and friend.user_id =%d";
+        sprintf(sqlStr,sqlFormat,id);
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(500, sqlStr,_db); 
+
+        int id;
+        char act[7];
+        char pwd[16];
+        char name[255];
+        int16_t age;
+        while(!ostream.eof())
+        { 
+            ostream>>id>>act>>pwd>>name>>age;
+            CUser friendUser(id,act,pwd,name,age);
+            friendLists.push_back(friendUser);
+        }
+        return friendLists.size();
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        friendLists.clear();
+        return -1;
+    }
+}
+
 string COtlUse::get_errmsg()
 {
     return _errMsg;
