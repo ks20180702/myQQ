@@ -6,23 +6,21 @@ int COtlUse::olt_init()
     try{
         _db.rlogon("DSN=pgsql;UID=postgres;PWD=123456;database=myQQ"); 
     }
-
     catch(otl_exception& p){ // intercept OTL exceptions
         strcpy(_errMsg,(char*)p.msg);
         return -1;
     }
-
     return 0;
 
 }
-
 
 int COtlUse::select_user_exist(string account,string password,CUser &myUser)
 {
     if(_connect_on()==-1) return -1;
     try{
-        char sqlStr[128]={0};
-        sprintf(sqlStr,"select * from user_info_table where account = '%s'",account.c_str());
+        char sqlStr[256]={0};
+        sprintf(sqlStr,"select user_id,account,pwd,user_name,user_age,current_ip,cast(last_leave_time as varchar) \
+                        from user_info_table where account = '%s'",account.c_str());
         //std::cout<<sqlStr<<std::endl;
         otl_stream ostream(500, sqlStr,_db); 
 
@@ -38,8 +36,7 @@ int COtlUse::select_user_exist(string account,string password,CUser &myUser)
                 return 1; //用户密码错误
             }
             myUser.set_user_info(id,act,pwd,name,age,curIp,lastLeaveTime);
-            return 0; //用户登录成功
-            
+            return 0; //用户登录成功   
         }
         return 2; //用户不存在
     }
@@ -48,6 +45,57 @@ int COtlUse::select_user_exist(string account,string password,CUser &myUser)
         strcpy(_errMsg,(char*)p.msg);
         return -1;
     }
+}
+
+int COtlUse::get_user_by_id(int id,CUser &myUser)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[256]={0};
+        sprintf(sqlStr,"select user_id,account,pwd,user_name,user_age,current_ip,cast(last_leave_time as varchar) \
+                        from user_info_table where user_id = %d",id);
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+
+        int id;
+        char act[7],pwd[16],name[255];
+        int16_t age;
+        char curIp[17],lastLeaveTime[32];
+        while(!ostream.eof())
+        { 
+            ostream>>id>>act>>pwd>>name>>age>>curIp>>lastLeaveTime;
+            myUser.set_user_info(id,act,pwd,name,age,curIp,lastLeaveTime);
+            return 0; //用户登录成功   
+        }
+        strcpy(_errMsg,"[E]  id is not exist");
+        return 2; //用户不存在
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    }
+}
+
+int COtlUse::change_user(CUser &needChangeUser)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[256]={0};
+        sprintf(sqlStr,
+        "UPDATE user_info_table set pwd='%s',user_name='%s',user_age=%d ,\
+        current_ip='%s' ,last_leave_time = '%s' where account='%s'",
+        needChangeUser.get_password(),needChangeUser.get_name(),needChangeUser.get_age(),
+        needChangeUser.get_ip(),needChangeUser.get_leave_time(),needChangeUser.get_account());
+        std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    } 
 }
 int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
 {
@@ -60,7 +108,7 @@ int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
                         INNER JOIN user_friend_info_table as friend \
                             on info.user_id=friend.user_friend_id and friend.user_id =%d";
         sprintf(sqlStr,sqlFormat,id);
-        std::cout<<sqlStr<<std::endl;
+        //std::cout<<sqlStr<<std::endl;
         otl_stream ostream(500, sqlStr,_db); 
 
         int id;
@@ -83,6 +131,55 @@ int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
     }
 }
 
+int COtlUse::get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[512]={0};
+        char sqlFormat[512]="SELECT msgInfo.msg_from_id,msgInfo.msg_to_id,cast(msgInfo.msg_datetime as varchar),\
+                    cast(msgInfo.msg_content as varchar) from msg_info_table as msgInfo \
+                INNER JOIN user_info_table as userInfo on msgInfo.msg_to_id=userInfo.user_id \
+	                and (userInfo.last_leave_time < msgInfo.msg_datetime or userInfo.last_leave_time is NULL) \
+                    and msgInfo.msg_to_id =%d";
+        // sprintf(sqlStr,sqlFormat,recvId);
+        std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(500, sqlStr,_db); 
+
+        int sendId,recvId;
+        char msgDateTime[32],content[512];
+        while(!ostream.eof())
+        {
+            ostream>>sendId>>recvId>>msgDateTime>>content;
+            CMsg tranMsg(sendId,recvId,msgDateTime,content);
+            notRecvMsgs.push_back(tranMsg);
+        }
+        return notRecvMsgs.size();
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        notRecvMsgs.clear();
+        return -1;
+    }
+}
+int COtlUse::set_msg_send(CMsg &sendMsg)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[128]={0};
+        sprintf(sqlStr,
+        "UPDATE msg_info_table set is_send='1' where msg_from_id= %d and msg_to_id=%d and msg_datetime='%s'",
+        sendMsg.get_send_id(),sendMsg.get_recv_id(),sendMsg.get_msg_dt());
+        std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    } 
+}
 string COtlUse::get_errmsg()
 {
     return _errMsg;

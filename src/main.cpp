@@ -11,20 +11,17 @@ int main()
 
     int selectReturn;
 	COtlUse otlUse;
-	CUser myUser;
+	CUser myUser,myUser02;
+	CMsg myMsg;
 	vector<CUser> friendLists;
+	vector<CMsg> notRecvMsgs;
 	otlUse.olt_init(); // otlUse.olt_init()==-1
+	int msgNum=otlUse.get_not_recv_msg(1,notRecvMsgs);
+	
+	myMsg.set_msg_info(1,2,"2023-11-28 10:50:45","");
+	otlUse.set_msg_send(myMsg);
+	std::cout<<"error:"<<otlUse.get_errmsg()<<std::endl;
 
-	int friendNum=otlUse.get_user_friends(1,friendLists);
-	if(friendNum==-1)
-	{
-		std::cout<<"error:"<<otlUse.get_errmsg()<<std::endl;
-		return -1;
-	}
-	for(vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
-	{
-		it->print();
-	}
 	return 0;// int selectReturn;
 }
 

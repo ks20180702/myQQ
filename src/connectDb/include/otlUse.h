@@ -8,10 +8,16 @@
 #include <k_total_head.h>
 #include "otlv4.h" // include the OTL 4.0 header file
 #include "user.h"
+#include "msg.h"
 
 #include <vector>
 
 using namespace std;
+
+/*
+    类型检查全都放到调用者中，使用db操作类默认数据都是正确
+*/
+
 
 class COtlUse
 {
@@ -25,16 +31,33 @@ public:
     // 错误-1，存在1，不存在2
     int select_user_exist(string account,string password,CUser &myUser);
 
+    // 获取用户信息
+    // 错误返回-1 ，成功0
+    int get_user_by_id(int id,CUser &myUser);
+
     // 获取用户的好友列表
     // return 好友数量，错误返回-1
     int get_user_friends(int id,vector<CUser> &friendLists);
+
+    // 将该账号的用户修改为输入的值，用户离开后会修改ip为""，并更新离开时间
+    // 错误-1，0成功
+    int change_user(CUser &needChangeUser);
+
+    //获取离线后未接收的消息
+    // return 未接收到的消息条数，错误返回-1
+    int get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs);
+    
+    // 设置当前的消息为已发送
+    // 错误-1，0成功
+    int set_msg_send(CMsg &sendMsg);
+
 
     // 获取上一次操作的错误消息
     string get_errmsg();
 
 private:
     otl_connect _db; // connect object
-    char _errMsg[128]="0";
+    char _errMsg[128]="OK";
 
     // 判断连接是否成功
     int _connect_on();
