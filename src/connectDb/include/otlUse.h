@@ -35,6 +35,10 @@ public:
     // 错误返回-1 ，成功0
     int get_user_by_id(int id,CUser &myUser);
 
+    // 通过账号来获取数据库中的自增id，将id设置到user中
+    // 错误返回-1，成功返回id
+    int set_user_id_by_account(CUser &myUser);
+
     // 获取用户的好友列表
     // return 好友数量，错误返回-1
     int get_user_friends(int id,vector<CUser> &friendLists);
@@ -42,6 +46,14 @@ public:
     // 将该账号的用户修改为输入的值，用户离开后会修改ip为""，并更新离开时间
     // 错误-1，0成功
     int change_user(CUser &needChangeUser);
+
+    // 增加用户
+    // 错误-1，0成功
+    int add_user(CUser &addUser);
+
+    // 增加用户好友
+    // 错误-1，0成功
+    int add_friend_info(CUser &myUser,CUser &myFriend);
 
     //获取离线后未接收的消息
     // return 未接收到的消息条数，错误返回-1

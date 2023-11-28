@@ -77,6 +77,29 @@ int COtlUse::get_user_by_id(int id,CUser &myUser)
     }
 }
 
+int COtlUse::set_user_id_by_account(CUser &myUser)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[128]={0};
+        sprintf(sqlStr,"select user_id from user_info_table where account = '%s'",myUser.get_account());
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+
+        int id;
+        while(!ostream.eof())
+        { 
+            ostream>>id;
+            myUser.set_id(id);
+            return id; //用户登录成功   
+        }
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    }
+}
 int COtlUse::change_user(CUser &needChangeUser)
 {
     if(_connect_on()==-1) return -1;
@@ -96,6 +119,43 @@ int COtlUse::change_user(CUser &needChangeUser)
         strcpy(_errMsg,(char*)p.msg);
         return -1;
     } 
+}
+int COtlUse::add_user(CUser &addUser)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[256]="INSERT into user_info_table (account,pwd,user_name,user_age) \  
+        values(:account<char[7]>,:pwd<char[16]>,:user_name<char[32]>,:user_age<int>)";
+
+        std::cout<<sqlStr<<std::endl;
+        //otl_stream ostream(2, sqlStr,_db); 
+        ostream<<addUser.get_account()<<addUser.get_password()<<addUser.get_name()<<(int)addUser.get_age();
+        ostream.flush();
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    }
+}
+int COtlUse::add_friend_info(CUser &myUser,CUser &myFriend)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[128]="INSERT into user_friend_info_table (user_id,user_friend_id) \
+        VALUES (:user_id<int>,:user_friend_id<int>)";
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+        ostream<<myUser.get_id()<<myFriend.get_id();
+        ostream.flush();
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    }
 }
 int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
 {

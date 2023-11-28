@@ -10,6 +10,10 @@ CUser::CUser(int userId,char *account,char *password,
 {
     this->set_user_info(userId,account,password,userName,userAge,currentIp,lastLeaveTime);
 }
+CUser::CUser(char *account,char *password,char* userName,int16_t userAge)
+{
+    this->set_user_info(0,account,password,userName,userAge,"","");
+}
 CUser::CUser(const CUser &other)
 {
     *this=other;
@@ -28,6 +32,11 @@ void CUser::set_user_info(int userId,char *account,char *password,
     strcpy(_currentIp,currentIp);
     strcpy(_lastLeaveTime,lastLeaveTime);
 }
+void CUser::set_id(int id)
+{
+    _userId=id;
+}
+
 int CUser::get_id() const
 {
     return _userId;

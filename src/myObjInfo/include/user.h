@@ -17,6 +17,7 @@ public:
     ~CUser();
     CUser(int userId,char *account,char *password,
         char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime);
+    CUser(char *account,char *password,char* userName,int16_t userAge);
     CUser(const CUser &other);
 
     //为用户设置对应的值
@@ -25,6 +26,9 @@ public:
     // 用account(账号)来判断是否相等
     bool operator==(const CUser &other);
     CUser &operator=(const CUser &other);
+
+    // 设置id,其他的不允许单独设置
+    void set_id(int id);
 
     // 返回对应的变量值
     int get_id() const;
@@ -40,7 +44,7 @@ private:
     int _userId;
     char _account[7];
     char _password[16];
-    char _userName[255];
+    char _userName[32];
     int16_t _userAge;
     char _currentIp[17];  //当前用户的登录ip
     char _lastLeaveTime[32]; //当前用户上一次的离开时间
