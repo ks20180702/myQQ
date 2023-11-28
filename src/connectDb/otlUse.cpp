@@ -27,22 +27,17 @@ int COtlUse::select_user_exist(string account,string password,CUser &myUser)
         otl_stream ostream(500, sqlStr,_db); 
 
         int id;
-        char act[7];
-        char pwd[16];
-        char name[255];
+        char act[7],pwd[16],name[255];
         int16_t age;
+        char curIp[17],lastLeaveTime[32];
         while(!ostream.eof())
         { 
-            ostream>>id;
-            ostream>>act;
-            ostream>>pwd;
-            ostream>>name;
-            ostream>>age;
+            ostream>>id>>act>>pwd>>name>>age>>curIp>>lastLeaveTime;
             if(strcmp(pwd,password.c_str())!=0)
             {
                 return 1; //用户密码错误
             }
-            myUser.set_user_info(id,act,pwd,name,age);
+            myUser.set_user_info(id,act,pwd,name,age,curIp,lastLeaveTime);
             return 0; //用户登录成功
             
         }
@@ -59,23 +54,23 @@ int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
     if(_connect_on()==-1) return -1;
     try{
         char sqlStr[512]={0};
-        char sqlFormat[512]="SELECT info.user_id,info.account,info.pwd,info.user_name,info.user_age \
+        char sqlFormat[512]="SELECT info.user_id,info.account,info.pwd, \
+                            info.user_name,info.user_age,info.current_ip,cast (info.last_leave_time as varchar) \
                         FROM user_info_table as info \
                         INNER JOIN user_friend_info_table as friend \
                             on info.user_id=friend.user_friend_id and friend.user_id =%d";
         sprintf(sqlStr,sqlFormat,id);
-        //std::cout<<sqlStr<<std::endl;
+        std::cout<<sqlStr<<std::endl;
         otl_stream ostream(500, sqlStr,_db); 
 
         int id;
-        char act[7];
-        char pwd[16];
-        char name[255];
+        char act[7],pwd[16],name[255];
         int16_t age;
+        char curIp[17],lastLeaveTime[32];
         while(!ostream.eof())
         { 
-            ostream>>id>>act>>pwd>>name>>age;
-            CUser friendUser(id,act,pwd,name,age);
+            ostream>>id>>act>>pwd>>name>>age>>curIp>>lastLeaveTime;
+            CUser friendUser(id,act,pwd,name,age,curIp,lastLeaveTime);
             friendLists.push_back(friendUser);
         }
         return friendLists.size();

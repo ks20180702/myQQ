@@ -3,6 +3,7 @@
 #include <iostream>
 #include "otlUse.h"
 
+using namespace std;
 #include "user.h"
 int main()
 {
@@ -11,17 +12,20 @@ int main()
     int selectReturn;
 	COtlUse otlUse;
 	CUser myUser;
-	std::vector<CUser> friendLists;
-	if(otlUse.olt_init()==-1)
+	vector<CUser> friendLists;
+	otlUse.olt_init(); // otlUse.olt_init()==-1
+
+	int friendNum=otlUse.get_user_friends(1,friendLists);
+	if(friendNum==-1)
 	{
 		std::cout<<"error:"<<otlUse.get_errmsg()<<std::endl;
 		return -1;
 	}
-	else
+	for(vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
 	{
-		std::cout<<"connect db is succeed"<<std::endl;
+		it->print();
 	}
-	int friendNum=otlUse.get_user_friends(1,friendLists);
-	std::cout<<"friend num = "<<friendNum<<std::endl;
-	return 0;
+	return 0;// int selectReturn;
 }
+
+

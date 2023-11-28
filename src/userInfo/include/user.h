@@ -14,13 +14,13 @@ class CUser
 public:
     CUser();
     ~CUser();
-    CUser(int user_id,char *account,char *password,
-        char* user_name,int16_t user_age);
+    CUser(int userId,char *account,char *password,
+        char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime);
     CUser(const CUser &other);
 
     //为用户设置对应的值
-    void set_user_info(int user_id,char *account,char *password,
-        char* user_name,int16_t user_age);
+    void set_user_info(int userId,char *account,char *password,
+        char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime);
     // 用account(账号)来判断是否相等
     bool operator==(const CUser &other);
     CUser &operator=(const CUser &other);
@@ -31,14 +31,18 @@ public:
     char *get_password() const;
     char *get_name() const;
     int16_t get_age() const;
+    char * get_ip() const;
+    char * get_leave_time() const;
     void print();
 
 private:
-    int _user_id;
+    int _userId;
     char _account[7];
     char _password[16];
-    char _user_name[255];
-    int16_t _user_age;
+    char _userName[255];
+    int16_t _userAge;
+    char _currentIp[17];  //当前用户的登录ip
+    char _lastLeaveTime[32]; //当前用户上一次的离开时间
 };
 
 #endif

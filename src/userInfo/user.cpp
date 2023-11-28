@@ -2,34 +2,39 @@
 
 
 CUser::CUser()
-    :_user_id(0),_account(""),_password(""),
-    _user_name(""),_user_age(0){}
+    :_userId(0),_account(""),_password(""),
+    _userName(""),_userAge(0),_currentIp(""),_lastLeaveTime(""){}
 
-CUser::CUser(int user_id,char *account,char *password,char *user_name,int16_t user_age)
+CUser::CUser(int userId,char *account,char *password,
+        char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime)
 {
-    _user_id=user_id;
+    _userId=userId;
     strcpy(_account,account);
     strcpy(_password,password);
-    strcpy(_user_name,user_name);
-    _user_age=user_age;
+    strcpy(_userName,userName);
+    _userAge=userAge;
+    strcpy(_currentIp,currentIp);
+    strcpy(_lastLeaveTime,lastLeaveTime);
 }
 CUser::CUser(const CUser &other)
 {
     *this=other;
 }
 
-void CUser::set_user_info(int user_id,char *account,char *password,
-    char* user_name,int16_t user_age)
+void CUser::set_user_info(int userId,char *account,char *password,
+    char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime)
 {
-    _user_id=user_id;
+    _userId=userId;
     strcpy(_account,account);
     strcpy(_password,password);
-    strcpy(_user_name,user_name);
-    _user_age=user_age;
+    strcpy(_userName,userName);
+    _userAge=userAge;
+    strcpy(_currentIp,currentIp);
+    strcpy(_lastLeaveTime,lastLeaveTime);
 }
 int CUser::get_id() const
 {
-    return _user_id;
+    return _userId;
 }
 char *CUser::get_account() const
 {
@@ -41,19 +46,29 @@ char *CUser::get_password() const
 }
 char *CUser::get_name() const
 {
-    return (char*)_user_name;
+    return (char*)_userName;
 }   
 int16_t CUser::get_age() const
 {
-    return _user_age;
+    return _userAge;
+}
+char * CUser::get_ip() const
+{
+    return (char*)_currentIp;
+}
+char *CUser::get_leave_time() const
+{
+    return (char*)_lastLeaveTime;
 }
 void CUser::print()
 {
     std::cout<<"id = "<<this->get_id();
-    std::cout<<" account = "<<this->get_account();
-    std::cout<<" password = "<<this->get_password();
-    std::cout<<" name = "<<this->get_name();
-    std::cout<<" age = "<<this->get_age()<<std::endl;
+    std::cout<<"; account = "<<this->get_account();
+    std::cout<<"; password = "<<this->get_password();
+    std::cout<<"; name = "<<this->get_name();
+    std::cout<<"; age = "<<this->get_age();
+    std::cout<<"; ip = "<<this->get_ip();
+    std::cout<<"; last leave time = "<<this->get_leave_time()<<std::endl;
 }
 bool CUser::operator==(const CUser &other)
 {
@@ -63,7 +78,7 @@ bool CUser::operator==(const CUser &other)
 CUser &CUser::operator=(const CUser &other)
 {
     this->set_user_info(other.get_id(),other.get_account(),other.get_password(),
-                        other.get_name(),other.get_age());
+                        other.get_name(),other.get_age(),other.get_ip(),other.get_leave_time());
 
     return *this;
 }
