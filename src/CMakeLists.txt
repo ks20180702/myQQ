@@ -12,7 +12,8 @@ link_directories(${PROJECT_SOURCE_DIR}/lib)
 
 #指令模块
 set( COMMANDOBJ 
-    ./commandObj/loginCmd.cpp)
+    ./commandObj/loginCmd.cpp
+    ./commandObj/userChangeCmd.cpp)
 
 #数据库模块
 set( CONNECTDB 
