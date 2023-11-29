@@ -14,30 +14,27 @@ int COtlUse::olt_init()
 
 }
 
-int COtlUse::select_user_exist(string account,string password,CUser &myUser)
+int COtlUse::select_user_exist(CUser &myUser)
 {
     if(_connect_on()==-1) return -1;
     try{
-        char sqlStr[256]={0};
-        sprintf(sqlStr,"select user_id,account,pwd,user_name,user_age,current_ip,cast(last_leave_time as varchar) \
-                        from user_info_table where account = '%s'",account.c_str());
+        char sqlStr[128]={0};
+        sprintf(sqlStr,"select pwd from user_info_table where account = '%s'",myUser.get_account());
         //std::cout<<sqlStr<<std::endl;
-        otl_stream ostream(500, sqlStr,_db); 
+        otl_stream ostream(2, sqlStr,_db); 
 
-        int id;
-        char act[7],pwd[16],name[255];
-        int16_t age;
-        char curIp[17],lastLeaveTime[32];
+        char pwd[16];
         while(!ostream.eof())
         { 
-            ostream>>id>>act>>pwd>>name>>age>>curIp>>lastLeaveTime;
-            if(strcmp(pwd,password.c_str())!=0)
+            ostream>>pwd;
+            if(strcmp(pwd,myUser.get_password())!=0)
             {
+                strcpy(_errMsg,"[E] the password is error");
                 return 1; //用户密码错误
             }
-            myUser.set_user_info(id,act,pwd,name,age,curIp,lastLeaveTime);
             return 0; //用户登录成功   
         }
+        strcpy(_errMsg,"[E] the user is not exist");
         return 2; //用户不存在
     }
     catch(otl_exception& p)
@@ -201,8 +198,8 @@ int COtlUse::get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs)
                 INNER JOIN user_info_table as userInfo on msgInfo.msg_to_id=userInfo.user_id \
 	                and (userInfo.last_leave_time < msgInfo.msg_datetime or userInfo.last_leave_time is NULL) \
                     and msgInfo.msg_to_id =%d";
-        // sprintf(sqlStr,sqlFormat,recvId);
-        std::cout<<sqlStr<<std::endl;
+        sprintf(sqlStr,sqlFormat,recvId);
+        // std::cout<<sqlStr<<std::endl;
         otl_stream ostream(500, sqlStr,_db); 
 
         int sendId,recvId;

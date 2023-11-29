@@ -28,8 +28,8 @@ public:
     int olt_init();
 
     // 判断用户是否存在
-    // 错误-1，存在1，不存在2
-    int select_user_exist(string account,string password,CUser &myUser);
+    // 错误-1，存在0，用户密码错误1,不存在2
+    int select_user_exist(CUser &myUser);
 
     // 获取用户信息
     // 错误返回-1 ，成功0

@@ -17,6 +17,7 @@ public:
     ~CUser();
     CUser(int userId,char *account,char *password,
         char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime);
+    //加入新用户时调用，其他时候不要使用该构造
     CUser(char *account,char *password,char* userName,int16_t userAge);
     CUser(const CUser &other);
 
