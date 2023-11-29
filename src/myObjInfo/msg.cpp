@@ -18,6 +18,7 @@ CMsg::CMsg(int sendId,int recvId,char *msgDateTime,char* content)
 void CMsg::set_msg_info(int sendId,int recvId,char *msgDateTime,char* content)
 {
     //此处需加一个长度检查
+    //暂时赋值会产生地址越界的可能错误
     
     _sendId=sendId;
     _recvId=recvId;

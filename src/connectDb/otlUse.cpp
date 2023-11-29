@@ -127,8 +127,8 @@ int COtlUse::add_user(CUser &addUser)
         char sqlStr[256]="INSERT into user_info_table (account,pwd,user_name,user_age) \  
         values(:account<char[7]>,:pwd<char[16]>,:user_name<char[32]>,:user_age<int>)";
 
-        std::cout<<sqlStr<<std::endl;
-        //otl_stream ostream(2, sqlStr,_db); 
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
         ostream<<addUser.get_account()<<addUser.get_password()<<addUser.get_name()<<(int)addUser.get_age();
         ostream.flush();
         return 0;
@@ -219,6 +219,25 @@ int COtlUse::get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs)
     {
         strcpy(_errMsg,(char*)p.msg);
         notRecvMsgs.clear();
+        return -1;
+    }
+}
+int COtlUse::add_msg(CMsg &addMsg)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[256]="INSERT into msg_info_table (msg_from_id,msg_to_id,msg_datetime,msg_content) \  
+        values(:msg_from_id<int>,:msg_to_id<int>,:msg_datetime<char[32]>,:msg_content<char[511]>)";
+
+        std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+        ostream<<addMsg.get_send_id()<<addMsg.get_recv_id()<<addMsg.get_msg_dt()<<addMsg.get_content();
+        ostream.flush();
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
         return -1;
     }
 }

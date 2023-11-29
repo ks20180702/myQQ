@@ -59,6 +59,10 @@ public:
     // return 未接收到的消息条数，错误返回-1
     int get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs);
     
+    // 增加一条消息
+    // 错误-1，成功0
+    int add_msg(CMsg &addMsg);
+
     // 设置当前的消息为已发送
     // 错误-1，0成功
     int set_msg_send(CMsg &sendMsg);
