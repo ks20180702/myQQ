@@ -26,10 +26,9 @@ set( myObjInfo
 
 link_directories("/usr/local/psqlodbc/lib")
 
-# add_executable(main  ${CONNECTDB})
 add_executable(main main.cpp ${SRC_LISTS} ${CONNECTDB} ${myObjInfo})
 
-target_link_libraries(main funShared)
+# target_link_libraries(main funShared)
 target_link_libraries(main /usr/local/psqlodbc/lib/psqlodbca.so)
 
 
