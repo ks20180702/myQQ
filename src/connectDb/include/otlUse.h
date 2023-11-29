@@ -51,6 +51,10 @@ public:
     // 错误-1，0成功
     int add_user(CUser &addUser);
 
+    // 删除好友关系
+    // 错误-1，0成功
+    int del_friendship(int id,int friendId);
+
     // 增加用户好友
     // 错误-1，0成功
     int add_friend_info(CUser &myUser,CUser &myFriend);

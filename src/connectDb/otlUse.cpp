@@ -136,6 +136,26 @@ int COtlUse::add_user(CUser &addUser)
         return -1;
     }
 }
+int COtlUse::del_friendship(int id,int friendId)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[128];
+        sprintf(sqlStr,
+        "DELETE from user_friend_info_table where user_id = %d and user_friend_id=%d",
+        id,friendId);
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+        ostream.flush();
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    }
+}
+
 int COtlUse::add_friend_info(CUser &myUser,CUser &myFriend)
 {
     if(_connect_on()==-1) return -1;
