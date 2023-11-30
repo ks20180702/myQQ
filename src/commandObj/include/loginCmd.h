@@ -14,12 +14,21 @@ class CLoginCmd:public CmdBase
 
 public:
     CLoginCmd();
+    CLoginCmd(CUser &loginUser);
     ~CLoginCmd();
 
     // 收到该指令时，执行预设功能
     //  1.检查用户账号密码，2.获取该用户的好友数据，3.获取消息未接收情况
     // 错误-1，成功0
     virtual int do_command() override;
+
+    //下一条需执行的指令
+    //空指令
+    virtual std::shared_ptr<CmdBase> get_next_command() override ;
+
+    //获取当前指令执行完后将发送给(客户端/服务器端)的指令
+    //操作通知指令
+    virtual std::shared_ptr<CmdBase> get_send_command() override;
 
     // 设置当前的登录对象
     void set_login_user(CUser &loginUser);

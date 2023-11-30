@@ -1,8 +1,12 @@
 #include "./include/loginCmd.h"
+#include "./include/nullCmd.h"
 
 CLoginCmd::CLoginCmd()
     :_loginUser(){}
-
+CLoginCmd::CLoginCmd(CUser &loginUser)
+{
+    _loginUser=loginUser;
+}
 int CLoginCmd::do_command()
 {
     if(_cmdOtlUse.olt_init()==-1) 
@@ -33,6 +37,25 @@ int CLoginCmd::do_command()
     
     // 4.发送用户成功消息+好友信息+为接收的信息数量(不加内容)
     return 0;
+}
+std::shared_ptr<CmdBase> CLoginCmd::get_next_command()
+{
+    if(_next_command_ptr == nullptr)
+    {
+        _next_command_ptr=std::make_shared<CNullCmd>();
+    }
+    
+    return _next_command_ptr;
+}
+
+std::shared_ptr<CmdBase> CLoginCmd::get_send_command()
+{
+    if(_send_command_ptr == nullptr)
+    {
+        _send_command_ptr=std::make_shared<CNullCmd>();
+    }
+    
+    return _send_command_ptr;
 }
 
 void CLoginCmd::set_login_user(CUser &loginUser)

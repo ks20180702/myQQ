@@ -1,4 +1,5 @@
 #include "./include/userChangeCmd.h"
+#include "./include/nullCmd.h"
 
 CUserChangeCmd::CUserChangeCmd()
     :_operatorUser(){}
@@ -24,6 +25,27 @@ int CUserChangeCmd::do_command()
 
     if(dealOperRe==-1) {std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;return -1;}
 }
+
+std::shared_ptr<CmdBase> CUserChangeCmd::get_next_command()
+{
+    if(_next_command_ptr == nullptr)
+    {
+        _next_command_ptr=std::make_shared<CNullCmd>();
+    }
+    
+    return _next_command_ptr;
+}
+
+std::shared_ptr<CmdBase> CUserChangeCmd::get_send_command()
+{
+    if(_send_command_ptr == nullptr)
+    {
+        _send_command_ptr=std::make_shared<CNullCmd>();
+    }
+    
+    return _send_command_ptr;
+}
+
 
 void CUserChangeCmd::set_operator_user(CUser &operatorUser)
 {

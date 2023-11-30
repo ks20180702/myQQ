@@ -25,6 +25,14 @@ public:
     // 执行用户处理相关命令
     // 错误-1，0增加成功/修改成功
     virtual int do_command() override;
+    
+   //下一条需执行的指令
+    //空指令
+    virtual std::shared_ptr<CmdBase> get_next_command() override ;
+
+    //获取当前指令执行完后将发送给(客户端/服务器端)的指令
+    //操作通知指令
+    virtual std::shared_ptr<CmdBase> get_send_command() override;
 
     //获取和设置用户(获取的并不是同一个)
     void set_operator_user(CUser &operatorUser);

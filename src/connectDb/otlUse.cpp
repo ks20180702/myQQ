@@ -107,7 +107,7 @@ int COtlUse::change_user(CUser &needChangeUser)
         current_ip='%s' ,last_leave_time = '%s' where account='%s'",
         needChangeUser.get_password(),needChangeUser.get_name(),needChangeUser.get_age(),
         needChangeUser.get_ip(),needChangeUser.get_leave_time(),needChangeUser.get_account());
-        std::cout<<sqlStr<<std::endl;
+        //std::cout<<sqlStr<<std::endl;
         otl_stream ostream(2, sqlStr,_db); 
         return 0;
     }
