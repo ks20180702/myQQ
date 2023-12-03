@@ -5,15 +5,21 @@ include_directories(./correspondence/include)
 include_directories(./connectDb/include)
 include_directories(./myObjInfo/include)
 include_directories(./commandObj/include)
+include_directories(./dataObj/include)
 
 aux_source_directory(. SRC_LISTS)
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
+#数据模块
+set( DATAOBJ 
+    ./dataObj/msgData.cpp)
+
 #指令模块
 set( COMMANDOBJ 
     ./commandObj/loginCmd.cpp
-    ./commandObj/userChangeCmd.cpp)
+    ./commandObj/userChangeCmd.cpp
+    ./commandObj/dataMsgCmd.cpp)
 
 #数据库模块
 set( CONNECTDB 
@@ -32,7 +38,7 @@ set( MYOBJINFO
 
 link_directories("/usr/local/psqlodbc/lib")
 
-add_executable(main main.cpp ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} ${COMMANDOBJ})
+add_executable(main main.cpp ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} ${COMMANDOBJ} ${DATAOBJ})
 
 target_link_libraries(main /usr/local/psqlodbc/lib/psqlodbca.so)
 

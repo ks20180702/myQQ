@@ -33,7 +33,7 @@ std::shared_ptr<CmdBase> CFriendshipChangeCmd::get_next_command()
 {
     if(_next_command_ptr == nullptr)
     {
-        _next_command_ptr=std::make_shared<CNullCmd>();
+        _next_command_ptr=std::make_shared<CNotOperatorCmd>();
     }
     
     return _next_command_ptr;
@@ -43,7 +43,7 @@ std::shared_ptr<CmdBase> CFriendshipChangeCmd::get_send_command()
 {
     if(_send_command_ptr == nullptr)
     {
-        _send_command_ptr=std::make_shared<CNullCmd>();
+        _send_command_ptr=std::make_shared<CNotOperatorCmd>();
     }
     
     return _send_command_ptr;

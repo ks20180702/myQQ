@@ -1,5 +1,5 @@
 #include "./include/loginCmd.h"
-#include "./include/nullCmd.h"
+#include "./include/notOperatorCmd.h"
 
 CLoginCmd::CLoginCmd()
     :_loginUser(){}
@@ -42,7 +42,7 @@ std::shared_ptr<CmdBase> CLoginCmd::get_next_command()
 {
     if(_next_command_ptr == nullptr)
     {
-        _next_command_ptr=std::make_shared<CNullCmd>();
+        _next_command_ptr=std::make_shared<CNotOperatorCmd>();
     }
     
     return _next_command_ptr;
@@ -52,7 +52,7 @@ std::shared_ptr<CmdBase> CLoginCmd::get_send_command()
 {
     if(_send_command_ptr == nullptr)
     {
-        _send_command_ptr=std::make_shared<CNullCmd>();
+        _send_command_ptr=std::make_shared<CNotOperatorCmd>();
     }
     
     return _send_command_ptr;
