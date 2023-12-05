@@ -3,7 +3,6 @@ include_directories(/usr/local/unixODBC/include)
 
 include_directories(./correspondence/include)
 include_directories(./connectDb/include)
-include_directories(./myObjInfo/include)
 include_directories(./commandObj/include)
 include_directories(./dataObj/include)
 
@@ -13,23 +12,20 @@ link_directories(${PROJECT_SOURCE_DIR}/lib)
 
 #数据模块
 set( DATAOBJ 
-    ./dataObj/msgData.cpp)
+    ./dataObj/msg.cpp
+    ./dataObj/user.cpp
+    ./dataObj/userNotRecvMsg.cpp)
 
 #指令模块
 set( COMMANDOBJ 
     ./commandObj/loginCmd.cpp
     ./commandObj/userChangeCmd.cpp
-    ./commandObj/dataMsgCmd.cpp)
+    ./commandObj/dataCmd.cpp)
 
 #数据库模块
 set( CONNECTDB 
     ./connectDb/otlUse.cpp)
     # ./connectDb/conPgsql.cpp)
-
-#自定义对象模块(用户对象，消息对象)
-set( MYOBJINFO 
-    ./myObjInfo/user.cpp
-    ./myObjInfo/msg.cpp)
 
 #通信模块
 # set( CORRESPONDENCE_LISTS 

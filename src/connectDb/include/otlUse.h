@@ -9,7 +9,7 @@
 #include "otlv4.h" // include the OTL 4.0 header file
 #include "user.h"
 #include "msg.h"
-
+#include "userNotRecvMsg.h"
 #include <vector>
 
 using namespace std;
@@ -59,10 +59,14 @@ public:
     // 错误-1，0成功
     int add_friend_info(CUser &myUser,CUser &myFriend);
 
-    //获取离线后未接收的消息
+    // 获取离线后未接收的消息详细数据(包括内容)
     // return 未接收到的消息条数，错误返回-1
     int get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs);
     
+    // 获取用户未读信息的好友id和数量(不获取内容)
+    // return 0成功 ，错误-1
+    int get_user_not_recv_msg_info(int recvId,vector<CUserNotRecvMsg> &userNotRecvMsgs);
+
     // 增加一条消息
     // 错误-1，成功0
     int add_msg(CMsg &addMsg);

@@ -5,6 +5,8 @@
     执行指令的基类，只可使用基指针，不允许创建
 */
 
+// 【未实现】
+// 暂时的几个指令的 get_next_command 和get_send_command都没实现
 #include <memory>
 #include "k_total_head.h"
 #include "otlUse.h"

@@ -239,6 +239,42 @@ int COtlUse::get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs)
         return -1;
     }
 }
+int COtlUse::get_user_not_recv_msg_info(int recvId,vector<CUserNotRecvMsg> &userNotRecvMsgs)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[1024]={0};
+        char sqlFormat[1024]="SELECT friendId,user_name ,notRecvNum from \
+                    ( \
+                        SELECT msgInfo.msg_from_id as friendId,count(msgInfo.msg_from_id) as notRecvNum \
+                        from msg_info_table as msgInfo \
+                        INNER JOIN user_info_table as userInfo on msgInfo.msg_to_id=userInfo.user_id \
+                            and (userInfo.last_leave_time < msgInfo.msg_datetime or userInfo.last_leave_time is NULL) \
+                            and msgInfo.msg_to_id =%d \
+                        group by msgInfo.msg_from_id \
+                    ) as notRecvInfo \
+                    INNER JOIN user_info_table as  u on notRecvInfo.friendId=u.user_id";
+        sprintf(sqlStr,sqlFormat,recvId);
+        // std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(500, sqlStr,_db); 
+
+        int friendId,notRecvNum;
+        char friendName[32];
+        while(!ostream.eof())
+        {
+            ostream>>friendId>>friendName>>notRecvNum;
+            CUserNotRecvMsg tranMsg(friendId,friendName,notRecvNum);
+            userNotRecvMsgs.push_back(tranMsg);
+        }
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        userNotRecvMsgs.clear();
+        return -1;
+    }
+}
 int COtlUse::add_msg(CMsg &addMsg)
 {
     if(_connect_on()==-1) return -1;
