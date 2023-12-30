@@ -1,5 +1,6 @@
 #include "include/clientQQ.h"
 #include "k_socket_include.h"
+#include "loginCmd.h"
 
 ClientQQ::ClientQQ()
     :_cliSoc(-1){FD_ZERO(&_globalFdset);}
@@ -112,14 +113,15 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
     {
         if (strcmp(buf,"KS_END")==0)
         {
-            std::cout<<"tempStr cmd =  "<<tempStr.length()<<std::endl;
+            std::cout<<"tempStr cmd =  "<<tempStr<<std::endl;
+            // param_cmd_str(tempStr);
+
             cmdStrOver=false;
             tempStr="";
         }
         else
         {
-            buf[readNum]='\0';
-            tempStr+=std::string(buf);
+            tempStr+=std::string(buf,readNum);
         }
     }
     else
@@ -136,6 +138,13 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
         }
     }
 
+}
+int ClientQQ::param_cmd_str(std::string cmdStr)
+{
+    CLoginCmd logInfo;
+    memcpy(&logInfo,cmdStr.c_str(),cmdStr.length());
+
+    (logInfo.get_login_user()).print();
 }
 char *ClientQQ::get_error()
 {

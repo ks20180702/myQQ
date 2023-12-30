@@ -30,6 +30,10 @@ public:
     //错误-1，成功0
     int recv_cmd_part(char *buf,int readNum);
     
+    //解析字符串，转成指定的指令对象
+    //错误-1，
+    int param_cmd_str(std::string cmdStr);
+
     char *get_error();
 
     //显示上一个错误的错误详情

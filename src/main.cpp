@@ -13,7 +13,8 @@ using namespace std;
 #include "serverQQ.h"
 #include "clientQQ.h"
 using namespace std;
-	
+
+
 int main()
 {
     std::cout<<"main +++"<<std::endl;
@@ -22,15 +23,21 @@ int main()
     myCli.client_init("192.168.47.136");
     myCli.select_init();
 
-    char testStr[256]={0};
-    FILE *fTest;
-    fTest=fopen("/home/ks02/K_runDir/myQQ/src/kk.txt", "rb");
+    CUser myUser(10,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
+    CLoginCmd logInfo(myUser);
+    // (loginCmd.get_login_user()).print();
+    
+    char cmdChar[sizeof(logInfo)];
+    memcpy(cmdChar,&logInfo,sizeof(logInfo));
 
-    int r=fread(testStr, sizeof(char), 256, fTest);
-    fclose(fTest);
+    for(int i=0;i<sizeof(logInfo);i++)
+    {
+        printf("%x",cmdChar[i]);
+    }
+    printf("\n");
+    std::cout<<sizeof(logInfo)<<std::endl;
 
-    myCli.run(testStr,256);
-
+    myCli.run(cmdChar,sizeof(logInfo));
     myCli.show_error_detail();
 
     std::cout<<"main over"<<std::endl;
