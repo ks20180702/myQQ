@@ -5,8 +5,10 @@ include_directories(./correspondence/include)
 include_directories(./connectDb/include)
 include_directories(./commandObj/include)
 include_directories(./dataObj/include)
+include_directories(./myServer/include)
+include_directories(./myClient/include)
 
-aux_source_directory(. SRC_LISTS)
+# aux_source_directory(. SRC_LISTS)
 
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
@@ -27,16 +29,26 @@ set( CONNECTDB
     ./connectDb/otlUse.cpp)
     # ./connectDb/conPgsql.cpp)
 
-#通信模块
-# set( CORRESPONDENCE_LISTS 
-#     ./correspondence/ServerQQ.c)
-
+#服务器模块
+set( MYSERVER 
+    ./myServer/serverQQ.cpp)
+#客户端模块
+set( MYCLIENT
+    ./myClient/clientQQ.cpp)
 
 link_directories("/usr/local/psqlodbc/lib")
 
-add_executable(main main.cpp ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} ${COMMANDOBJ} ${DATAOBJ})
+set(MAINFILE demoServer.cpp)
+set(MAINNAME ser)
+set(MAINFILE main.cpp)
+set(MAINNAME main)
 
-target_link_libraries(main /usr/local/psqlodbc/lib/psqlodbca.so)
+add_executable(${MAINNAME} ${MAINFILE} ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} 
+    ${COMMANDOBJ} ${DATAOBJ} ${MYSERVER} ${MYCLIENT})
+# add_executable(main main.cpp ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} 
+#     ${COMMANDOBJ} ${DATAOBJ} ${MYSERVER} ${MYCLIENT})
+
+target_link_libraries(${MAINNAME} /usr/local/psqlodbc/lib/psqlodbca.so)
 
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

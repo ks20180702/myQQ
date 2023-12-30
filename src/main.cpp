@@ -10,29 +10,30 @@ using namespace std;
 #include "dataCmd.h"
 
 #include "userNotRecvMsg.h"
+#include "serverQQ.h"
+#include "clientQQ.h"
 using namespace std;
 	
 int main()
 {
-	std::cout<<"main +++"<<std::endl;
+    std::cout<<"main +++"<<std::endl;
 
-	COtlUse myOtlUse;
-	CUser user1("123456","123456","",0);
-	vector<CUserNotRecvMsg> userNotRecvMsgs;
-	int recvRe;
+    ClientQQ myCli;
+    myCli.client_init("192.168.47.136");
+    myCli.select_init();
 
-	myOtlUse.olt_init();
-	myOtlUse.set_user_id_by_account(user1);
-	myOtlUse.get_user_by_id(user1.get_id(),user1);
-	user1.print();
-	
-	recvRe=myOtlUse.get_user_not_recv_msg_info(user1.get_id(),userNotRecvMsgs);
-	if(recvRe==-1) std::cout<<myOtlUse.get_errmsg()<<std::endl;
+    char testStr[1024]={0};
+    FILE *fTest;
+    fTest=fopen("/home/ks02/K_runDir/myQQ/src/kk.txt", "rb");
 
-	for(vector<CUserNotRecvMsg>::iterator it=userNotRecvMsgs.begin();it!=userNotRecvMsgs.end();it++)
-	{
-		it->print();
-	}
+    int r=fread(testStr, sizeof(char), 1024, fTest);
+    fclose(fTest);
+
+    myCli.run(testStr,1024);
+
+    myCli.show_error_detail();
+
+    std::cout<<"main over"<<std::endl;
 }
 
 
