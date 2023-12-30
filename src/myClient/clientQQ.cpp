@@ -47,11 +47,11 @@ int ClientQQ::run(char *testStr,int n)
             {
                 FD_CLR(i,&currFdset);
 
+                memset(buf,0,SEND_RECV_BUF_SIZE);
                 r=recvfrom(_cliSoc,buf,SEND_RECV_BUF_SIZE,0,(struct sockaddr*)&_serAddr,&serLen);
                 if(r==-1) {strcpy(_errMsg,"recvfrom error "); return -1;}
-                write(1,"recv from : ",sizeof("recv from : "));
-                write(1,buf,r);
-                write(1,"\n",2);
+
+                recv_cmd_part(buf,r);
             }
             else if(i==0) // i/o输入
             {
@@ -60,17 +60,25 @@ int ClientQQ::run(char *testStr,int n)
                 memset(inputDate,0,SEND_RECV_BUF_SIZE);
                 scanf("%s",inputDate);
 
-                // send_part(inputDate,strlen(inputDate));
-                send_part(testStr,n);
+                // send_part(inputDate,strlen(inputDate),true);
+                // send_part(inputDate,strlen(inputDate),false);
+                send_part(testStr,n,true);
             }
         }
     }
 }
-int ClientQQ::send_part(char *sendStr,int n)
+int ClientQQ::send_part(char *sendStr,int n,bool isCmd)
 {
     size_t w;
     char *sendTemp=sendStr;
     int nowNum=0,sendLen;
+    
+    if(isCmd==true)
+    {
+        w=sendto(_cliSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
+        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+    }
+
     while(nowNum<n)
     {
         if((n-nowNum)>=SEND_RECV_BUF_SIZE)
@@ -82,9 +90,52 @@ int ClientQQ::send_part(char *sendStr,int n)
         }
         w=sendto(_cliSoc,sendTemp+nowNum,sendLen,0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
         if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+
         nowNum+=w;
     }
+
+    if(isCmd==true)
+    {
+        w=sendto(_cliSoc,"KS_END",sizeof("KS_END"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
+        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+    }
+
     return 0;
+}
+int ClientQQ::recv_cmd_part(char *buf,int readNum)
+{
+    //是否开始接收，当接收到开始标志(KS_START)表示开始接收整条语句
+    static bool cmdStrOver=false;
+    static std::string tempStr="";
+
+    if(cmdStrOver==true)
+    {
+        if (strcmp(buf,"KS_END")==0)
+        {
+            std::cout<<"tempStr cmd =  "<<tempStr.length()<<std::endl;
+            cmdStrOver=false;
+            tempStr="";
+        }
+        else
+        {
+            buf[readNum]='\0';
+            tempStr+=std::string(buf);
+        }
+    }
+    else
+    {
+        // 接收结构体
+        if(strcmp(buf,"KS_START")==0)
+        {
+            cmdStrOver=true;
+            tempStr="";
+        }
+        else
+        {
+            std::cout<<"recv from : "<<buf<<std::endl;
+        }
+    }
+
 }
 char *ClientQQ::get_error()
 {

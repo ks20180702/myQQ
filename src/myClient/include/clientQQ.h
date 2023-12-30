@@ -23,7 +23,12 @@ public:
 
     //分批发送数据，暂定1024
     //错误-1，成功0
-    int send_part(char *sendStr,int n);
+    // isCmd 是否发送为指令类，是则会自动增加前后关键字符
+    int send_part(char *sendStr,int n,bool isCmd);
+
+    //按指定协议分批接收数据
+    //错误-1，成功0
+    int recv_cmd_part(char *buf,int readNum);
     
     char *get_error();
 

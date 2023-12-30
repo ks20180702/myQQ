@@ -22,14 +22,14 @@ int main()
     myCli.client_init("192.168.47.136");
     myCli.select_init();
 
-    char testStr[1024]={0};
+    char testStr[256]={0};
     FILE *fTest;
     fTest=fopen("/home/ks02/K_runDir/myQQ/src/kk.txt", "rb");
 
-    int r=fread(testStr, sizeof(char), 1024, fTest);
+    int r=fread(testStr, sizeof(char), 256, fTest);
     fclose(fTest);
 
-    myCli.run(testStr,1024);
+    myCli.run(testStr,256);
 
     myCli.show_error_detail();
 
