@@ -3,6 +3,10 @@
 
 #include "k_socket_include.h"
 #include "k_total_head.h"
+#include "loginCmd.h"
+
+#include <vector>
+
 class ClientQQ
 {
 public:

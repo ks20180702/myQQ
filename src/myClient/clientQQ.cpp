@@ -1,6 +1,5 @@
 #include "include/clientQQ.h"
 #include "k_socket_include.h"
-#include "loginCmd.h"
 
 ClientQQ::ClientQQ()
     :_cliSoc(-1){FD_ZERO(&_globalFdset);}
@@ -50,9 +49,10 @@ int ClientQQ::run(char *testStr,int n)
 
                 memset(buf,0,SEND_RECV_BUF_SIZE);
                 r=recvfrom(_cliSoc,buf,SEND_RECV_BUF_SIZE,0,(struct sockaddr*)&_serAddr,&serLen);
-                if(r==-1) {strcpy(_errMsg,"recvfrom error "); return -1;}
+                if(r<0) {strcpy(_errMsg,"recvfrom error "); return -1;}
 
                 recv_cmd_part(buf,r);
+                
             }
             else if(i==0) // i/o输入
             {
@@ -113,8 +113,8 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
     {
         if (strcmp(buf,"KS_END")==0)
         {
-            std::cout<<"tempStr cmd =  "<<tempStr<<std::endl;
-            // param_cmd_str(tempStr);
+            std::cout<<"tempStr cmd =  "<<tempStr.length()<<std::endl;
+            param_cmd_str(tempStr);
 
             cmdStrOver=false;
             tempStr="";
@@ -137,14 +137,23 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
             std::cout<<"recv from : "<<buf<<std::endl;
         }
     }
+    return 0;
 
 }
 int ClientQQ::param_cmd_str(std::string cmdStr)
 {
-    CLoginCmd logInfo;
-    memcpy(&logInfo,cmdStr.c_str(),cmdStr.length());
+    CLoginCmd *logInfo=(CLoginCmd *)new char [cmdStr.length()];;
+    memcpy(logInfo,cmdStr.c_str(),cmdStr.length());
 
-    (logInfo.get_login_user()).print();
+
+    std::vector<CUser> friendLists=logInfo->get_friend_lists();
+    for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
+    {
+        (*it).print();
+    }
+    (logInfo->get_login_user()).print();
+
+    return 0;
 }
 char *ClientQQ::get_error()
 {

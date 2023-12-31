@@ -38,6 +38,9 @@ public:
     //返回好友列表的引用
     std::vector<CUser> &get_friend_lists();
 
+    //测试
+    void add_login_user(CUser &loginUser);
+
     //返回未接收消息的引用
     vector<CMsg> &get_not_recv_msg_lists();
 

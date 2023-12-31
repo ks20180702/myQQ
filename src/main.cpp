@@ -25,20 +25,39 @@ int main()
 
     CUser myUser(10,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
     CLoginCmd logInfo(myUser);
-    // (loginCmd.get_login_user()).print();
-    
-    char cmdChar[sizeof(logInfo)];
-    memcpy(cmdChar,&logInfo,sizeof(logInfo));
 
-    for(int i=0;i<sizeof(logInfo);i++)
+    std::vector<CUser> myTest;
+
+    for(int i=0;i<10;i++)
     {
-        printf("%x",cmdChar[i]);
+        CUser myUser(i,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
+        // logInfo.add_login_user(myUser);
+        myTest.push_back(myUser);
     }
-    printf("\n");
-    std::cout<<sizeof(logInfo)<<std::endl;
+    
+    char vecChar[sizeof(decltype(myTest)::value_type)*myTest.size()]; 
+    for(std::vector<CUser>::iterator it=myTest.begin();it!=myTest.end();it++)
+    {
+        memcpy(vecChar+sizeof(decltype(myTest)::value_type)*(it-myTest.begin()),&(*it),sizeof(*it));
+    }
+    // char cmdChar[sizeof(logInfo)];
+    // memcpy(cmdChar,&logInfo,sizeof(logInfo));
 
-    myCli.run(cmdChar,sizeof(logInfo));
-    myCli.show_error_detail();
+    char cmdChar[sizeof(myTest)];
+    memcpy(cmdChar,&myTest,sizeof(myTest));
+
+    CUser myTT;
+    for(int i=0;i<myTest.size();i++)
+    {
+        memcpy(&myTT,vecChar+sizeof(myTT)*i,sizeof(myTT));
+        myTT.print();
+    }
+    std::cout<<sizeof(decltype(myTest)::value_type)*myTest.size()<<std::endl;
+
+    
+    
+    // myCli.run(cmdChar,sizeof(logInfo));
+    // myCli.show_error_detail();
 
     std::cout<<"main over"<<std::endl;
 }

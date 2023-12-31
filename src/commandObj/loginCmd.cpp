@@ -7,6 +7,11 @@ CLoginCmd::CLoginCmd(CUser &loginUser)
 {
     _loginUser=loginUser;
 }
+//测试的
+void CLoginCmd::add_login_user(CUser &loginUser)
+{
+    _friendLists.push_back(loginUser);
+}   
 int CLoginCmd::do_command()
 {
     if(_cmdOtlUse.olt_init()==-1) 
@@ -76,5 +81,7 @@ std::vector<CMsg> &CLoginCmd::get_not_recv_msg_lists()
     return _notRecvMsgsLists;
 }
 
-CLoginCmd::~CLoginCmd(){}
+CLoginCmd::~CLoginCmd(){
+    _friendLists.clear();
+}
 
