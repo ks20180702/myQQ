@@ -27,7 +27,6 @@ int main()
     CLoginCmd logInfo(myUser);
 
     std::vector<CUser> myTest;
-
     for(int i=0;i<10;i++)
     {
         CUser myUser(i,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
@@ -43,21 +42,15 @@ int main()
     // char cmdChar[sizeof(logInfo)];
     // memcpy(cmdChar,&logInfo,sizeof(logInfo));
 
-    char cmdChar[sizeof(myTest)];
-    memcpy(cmdChar,&myTest,sizeof(myTest));
+    char cmdChar[sizeof(logInfo)+sizeof(vecChar)];
+    memcpy(cmdChar,&logInfo,sizeof(logInfo));
+    memcpy(cmdChar+sizeof(logInfo),vecChar,sizeof(vecChar));
 
-    CUser myTT;
-    for(int i=0;i<myTest.size();i++)
-    {
-        memcpy(&myTT,vecChar+sizeof(myTT)*i,sizeof(myTT));
-        myTT.print();
-    }
     std::cout<<sizeof(decltype(myTest)::value_type)*myTest.size()<<std::endl;
+    std::cout<<sizeof(cmdChar)<<std::endl;
 
-    
-    
-    // myCli.run(cmdChar,sizeof(logInfo));
-    // myCli.show_error_detail();
+    myCli.run(cmdChar,sizeof(cmdChar));
+    myCli.show_error_detail();
 
     std::cout<<"main over"<<std::endl;
 }

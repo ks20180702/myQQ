@@ -32,18 +32,21 @@ public:
 
     // 设置当前的登录对象
     void set_login_user(CUser &loginUser);
+
     // 获取登录对象的值(非同一个)，用于查看
     CUser get_login_user();
 
     //返回好友列表的引用
     std::vector<CUser> &get_friend_lists();
 
-    //测试
-    void add_login_user(CUser &loginUser);
-
     //返回未接收消息的引用
     vector<CMsg> &get_not_recv_msg_lists();
 
+    //设置好友列表
+    void set_friend_lists(std::vector<CUser> &friendLists);
+
+    //测试
+    void add_login_user(CUser &loginUser);
 private:
     //当前用于登录的对象
     CUser _loginUser;

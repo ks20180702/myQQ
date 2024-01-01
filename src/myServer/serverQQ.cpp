@@ -90,14 +90,17 @@ int CServerQQ::recv_cmd_part(char *buf,int readNum)
 int CServerQQ::param_cmd_str(std::string cmdStr)
 {
     CLoginCmd *logInfo=(CLoginCmd *)new char [cmdStr.length()];;
-    memcpy(logInfo,cmdStr.c_str(),cmdStr.length());
+    memcpy(logInfo,cmdStr.c_str(),sizeof(CLoginCmd));
 
-
-    std::vector<CUser> friendLists=logInfo->get_friend_lists();
-    for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
+    std::vector<CUser> friendLists;
+    CUser myTT;
+    for(int i=0;i<10;i++)
     {
-        (*it).print();
+        memcpy(&myTT,cmdStr.c_str()+sizeof(CLoginCmd)+sizeof(myTT)*i,sizeof(myTT));
+        myTT.print();
+        friendLists.push_back(myTT);
     }
+
     (logInfo->get_login_user()).print();
 
     return 0;

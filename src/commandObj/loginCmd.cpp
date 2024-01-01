@@ -80,7 +80,10 @@ std::vector<CMsg> &CLoginCmd::get_not_recv_msg_lists()
 {
     return _notRecvMsgsLists;
 }
-
+void CLoginCmd::set_friend_lists(std::vector<CUser> &friendLists)
+{
+    _friendLists=friendLists;
+}
 CLoginCmd::~CLoginCmd(){
     _friendLists.clear();
 }
