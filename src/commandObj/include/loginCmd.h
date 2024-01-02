@@ -45,11 +45,21 @@ public:
     //设置好友列表
     void set_friend_lists(std::vector<CUser> &friendLists);
 
+    //获取当前对象大小
+    int get_obj_sizeof();
+
+    //将对象转成字节流
+    void obj_to_char(char *toChar);
+
     //测试
     void add_login_user(CUser &loginUser);
 private:
     //当前用于登录的对象
     CUser _loginUser;
+    
+    //记录容器中元素的个数
+    int _friendNum;
+    int _notMsgNum;
 
 //可以考虑不作为成员变量
     //当前用户的好友信息

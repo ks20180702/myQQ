@@ -30,15 +30,18 @@ int main()
     for(int i=0;i<10;i++)
     {
         CUser myUser(i,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
-        // logInfo.add_login_user(myUser);
         myTest.push_back(myUser);
     }
-    
+    logInfo.set_friend_lists(myTest);
+
+    std::cout<<logInfo.get_obj_sizeof()<<std::endl;
+    return 0;
+
     char vecChar[sizeof(decltype(myTest)::value_type)*myTest.size()]; 
-    for(std::vector<CUser>::iterator it=myTest.begin();it!=myTest.end();it++)
-    {
-        memcpy(vecChar+sizeof(decltype(myTest)::value_type)*(it-myTest.begin()),&(*it),sizeof(*it));
-    }
+    // for(std::vector<CUser>::iterator it=myTest.begin();it!=myTest.end();it++)
+    // {
+    //     memcpy(vecChar+sizeof(decltype(myTest)::value_type)*(it-myTest.begin()),&(*it),sizeof(*it));
+    // }
     // char cmdChar[sizeof(logInfo)];
     // memcpy(cmdChar,&logInfo,sizeof(logInfo));
 

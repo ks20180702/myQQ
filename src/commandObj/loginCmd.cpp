@@ -2,7 +2,7 @@
 #include "./include/notOperatorCmd.h"
 
 CLoginCmd::CLoginCmd()
-    :_loginUser(){}
+    :_loginUser(),_friendNum(0),_notMsgNum(0){}
 CLoginCmd::CLoginCmd(CUser &loginUser)
 {
     _loginUser=loginUser;
@@ -83,6 +83,15 @@ std::vector<CMsg> &CLoginCmd::get_not_recv_msg_lists()
 void CLoginCmd::set_friend_lists(std::vector<CUser> &friendLists)
 {
     _friendLists=friendLists;
+    _friendNum=_friendLists.size();
+}
+int CLoginCmd::get_obj_sizeof()
+{
+    return sizeof(*this)+_friendLists.size()*sizeof(CUser)+_notRecvMsgsLists.size()*sizeof(CMsg);
+}
+void CLoginCmd::obj_to_char(char *toChar)
+{
+
 }
 CLoginCmd::~CLoginCmd(){
     _friendLists.clear();
