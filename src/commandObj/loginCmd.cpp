@@ -91,7 +91,20 @@ int CLoginCmd::get_obj_sizeof()
 }
 void CLoginCmd::obj_to_char(char *toChar)
 {
+    _friendNum=_friendLists.size();
+    _notMsgNum=_notRecvMsgsLists.size();
+    cout<<sizeof(*this)<<endl;
+    memcpy(toChar,this,sizeof(*this));
 
+    for(std::vector<CUser>::iterator it=_friendLists.begin();it!=_friendLists.end();it++)
+    {
+        memcpy(toChar+sizeof(*this)+sizeof(CUser)*(it-_friendLists.begin()),&(*it),sizeof(*it));
+    }
+
+    for(std::vector<CMsg>::iterator itMsg=_notRecvMsgsLists.begin();itMsg!=_notRecvMsgsLists.end();itMsg++)
+    {
+        memcpy(toChar+sizeof(*this)+sizeof(CUser)*_friendNum+sizeof(CMsg)*(itMsg-_notRecvMsgsLists.begin()),&(*itMsg),sizeof(*itMsg));
+    }
 }
 CLoginCmd::~CLoginCmd(){
     _friendLists.clear();

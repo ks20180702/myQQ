@@ -34,25 +34,28 @@ int main()
     }
     logInfo.set_friend_lists(myTest);
 
-    std::cout<<logInfo.get_obj_sizeof()<<std::endl;
-    return 0;
+    char vecChar[logInfo.get_obj_sizeof()]; 
+    logInfo.obj_to_char(vecChar);
+    std::cout<<sizeof(vecChar)<<std::endl;
 
-    char vecChar[sizeof(decltype(myTest)::value_type)*myTest.size()]; 
-    // for(std::vector<CUser>::iterator it=myTest.begin();it!=myTest.end();it++)
+    // char *cmdStr=vecChar;
+    // string cmdStr=string(vecChar,sizeof(vecChar));
+    // CLoginCmd logInfo2;
+    // // memcpy(&logInfo2,vecChar,sizeof(logInfo2));
+    // memcpy(&logInfo2,cmdStr.c_str(),sizeof(logInfo2));
+    // (logInfo2.get_login_user()).print();
+
+    // std::vector<CUser> friendLists;
+    // CUser myTT;
+    // for(int i=0;i<10;i++)
     // {
-    //     memcpy(vecChar+sizeof(decltype(myTest)::value_type)*(it-myTest.begin()),&(*it),sizeof(*it));
+    //     memcpy(&myTT,cmdStr.c_str()+sizeof(CLoginCmd)+sizeof(myTT)*i,sizeof(myTT));
+    //     // memcpy(&myTT,vecChar+sizeof(CLoginCmd)+sizeof(myTT)*i,sizeof(myTT));
+    //     myTT.print();
+    //     friendLists.push_back(myTT);
     // }
-    // char cmdChar[sizeof(logInfo)];
-    // memcpy(cmdChar,&logInfo,sizeof(logInfo));
 
-    char cmdChar[sizeof(logInfo)+sizeof(vecChar)];
-    memcpy(cmdChar,&logInfo,sizeof(logInfo));
-    memcpy(cmdChar+sizeof(logInfo),vecChar,sizeof(vecChar));
-
-    std::cout<<sizeof(decltype(myTest)::value_type)*myTest.size()<<std::endl;
-    std::cout<<sizeof(cmdChar)<<std::endl;
-
-    myCli.run(cmdChar,sizeof(cmdChar));
+    myCli.run(vecChar,sizeof(vecChar));
     myCli.show_error_detail();
 
     std::cout<<"main over"<<std::endl;

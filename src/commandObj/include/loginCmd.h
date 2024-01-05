@@ -49,6 +49,7 @@ public:
     int get_obj_sizeof();
 
     //将对象转成字节流
+    //这里可以增加内存异常捕获，出错返回(暂时未写)
     void obj_to_char(char *toChar);
 
     //测试
