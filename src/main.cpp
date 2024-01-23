@@ -14,6 +14,8 @@ using namespace std;
 #include "clientQQ.h"
 using namespace std;
 
+#include <typeinfo>
+
 
 int main()
 {
@@ -35,16 +37,20 @@ int main()
     logInfo.set_friend_lists(myTest);
 
     char vecChar[logInfo.get_obj_sizeof()]; 
-    logInfo.obj_to_char(vecChar);
+    // logInfo.obj_to_char(vecChar);
+    memcpy(vecChar,&logInfo,sizeof(logInfo));
+
+    for(std::vector<CUser>::iterator it=myTest.begin();it!=myTest.end();it++)
+    {
+        memcpy(vecChar+sizeof(logInfo)+sizeof(CUser)*(it-myTest.begin()),&(*it),sizeof(*it));
+    }
     std::cout<<sizeof(vecChar)<<std::endl;
 
-    // char *cmdStr=vecChar;
-    // string cmdStr=string(vecChar,sizeof(vecChar));
-    // CLoginCmd logInfo2;
     // // memcpy(&logInfo2,vecChar,sizeof(logInfo2));
     // memcpy(&logInfo2,cmdStr.c_str(),sizeof(logInfo2));
     // (logInfo2.get_login_user()).print();
 
+    // logInfo2=logInfo;
     // std::vector<CUser> friendLists;
     // CUser myTT;
     // for(int i=0;i<10;i++)
@@ -54,6 +60,8 @@ int main()
     //     myTT.print();
     //     friendLists.push_back(myTT);
     // }
+    // std::cout<<endl;
+    // std::cout<<typeid(myTest).name()<<std::endl;
 
     myCli.run(vecChar,sizeof(vecChar));
     myCli.show_error_detail();
