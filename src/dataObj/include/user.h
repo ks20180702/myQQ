@@ -3,6 +3,11 @@
 #include <k_total_head.h>
 #include "dataBase.h"
 
+
+#include <cereal/archives/json.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/string.hpp>
+
 /*用户功能暂定
     1.设置要素值
     2.用户同一个判断、用户赋值、获取各要素值
@@ -41,6 +46,19 @@ public:
     char * get_ip() const;
     char * get_leave_time() const;
     void print();
+
+
+    template <class Archive>
+    void serialize(Archive & ar)
+	{
+		ar(cereal::make_nvp("_userId", _userId),
+        cereal::make_nvp("_account",std::string(_account)), 
+        cereal::make_nvp("_password",std::string(_password)), 
+        cereal::make_nvp("_userName",std::string(_userName)), 
+        cereal::make_nvp("_userAge",_userAge), 
+        cereal::make_nvp("_currentIp",std::string(_currentIp)), 
+        cereal::make_nvp("_lastLeaveTime",std::string(_lastLeaveTime)));
+	}
 
 private:
     int _userId;

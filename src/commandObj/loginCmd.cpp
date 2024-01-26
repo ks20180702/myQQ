@@ -2,16 +2,11 @@
 #include "./include/notOperatorCmd.h"
 
 CLoginCmd::CLoginCmd()
-    :_loginUser(),_friendNum(0),_notMsgNum(0){}
+    :_loginUser(){}
 CLoginCmd::CLoginCmd(CUser &loginUser)
 {
     _loginUser=loginUser;
-}
-//测试的
-void CLoginCmd::add_login_user(CUser &loginUser)
-{
-    _friendLists.push_back(loginUser);
-}   
+}  
 int CLoginCmd::do_command()
 {
     if(_cmdOtlUse.olt_init()==-1) 
@@ -83,29 +78,14 @@ std::vector<CMsg> &CLoginCmd::get_not_recv_msg_lists()
 void CLoginCmd::set_friend_lists(std::vector<CUser> &friendLists)
 {
     _friendLists=friendLists;
-    _friendNum=_friendLists.size();
 }
-int CLoginCmd::get_obj_sizeof()
-{
-    return sizeof(*this)+_friendLists.size()*sizeof(CUser)+_notRecvMsgsLists.size()*sizeof(CMsg);
-}
-void CLoginCmd::obj_to_char(char *toChar)
-{
-    _friendNum=_friendLists.size();
-    _notMsgNum=_notRecvMsgsLists.size();
-    cout<<sizeof(*this)<<endl;
-    memcpy(toChar,this,sizeof(*this));
 
-    for(std::vector<CUser>::iterator it=_friendLists.begin();it!=_friendLists.end();it++)
-    {
-        memcpy(toChar+sizeof(*this)+sizeof(CUser)*(it-_friendLists.begin()),&(*it),sizeof(*it));
-    }
 
-    for(std::vector<CMsg>::iterator itMsg=_notRecvMsgsLists.begin();itMsg!=_notRecvMsgsLists.end();itMsg++)
-    {
-        memcpy(toChar+sizeof(*this)+sizeof(CUser)*_friendNum+sizeof(CMsg)*(itMsg-_notRecvMsgsLists.begin()),&(*itMsg),sizeof(*itMsg));
-    }
-}
+// int CLoginCmd::get_obj_sizeof()
+// {
+//     return sizeof(*this)+_friendLists.size()*sizeof(CUser)+_notRecvMsgsLists.size()*sizeof(CMsg);
+// }
+
 CLoginCmd::~CLoginCmd(){
     _friendLists.clear();
 }

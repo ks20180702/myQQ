@@ -9,6 +9,11 @@
 #include "user.h"
 #include "msg.h"
 
+#include <sstream>
+#include <cereal/archives/json.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/string.hpp>
+
 class CLoginCmd:public CmdBase
 {
 
@@ -45,22 +50,22 @@ public:
     //设置好友列表
     void set_friend_lists(std::vector<CUser> &friendLists);
 
-    //获取当前对象大小
-    int get_obj_sizeof();
+    // //获取当前对象大小
+    // int get_obj_sizeof();
 
-    //将对象转成字节流
-    //这里可以增加内存异常捕获，出错返回(暂时未写)
-    void obj_to_char(char *toChar);
 
-    //测试
-    void add_login_user(CUser &loginUser);
+    //序列化
+    template <class Archive>
+    void serialize(Archive & ar)
+	{
+		ar(cereal::make_nvp("_loginUser", _loginUser),
+        cereal::make_nvp("_friendLists", _friendLists), 
+        cereal::make_nvp("_notRecvMsgsLists", _notRecvMsgsLists));
+	}
+
 private:
     //当前用于登录的对象
     CUser _loginUser;
-    
-    //记录容器中元素的个数
-    int _friendNum;
-    int _notMsgNum;
 
 //可以考虑不作为成员变量
     //当前用户的好友信息

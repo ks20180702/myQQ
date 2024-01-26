@@ -90,33 +90,26 @@ int CServerQQ::recv_cmd_part(char *buf,int readNum)
 
 int CServerQQ::param_cmd_str(std::string cmdStr)
 {
-    CLoginCmd logInfo2;
-    //必须先加上这一步(转成字符数组)，直接使用cmdStr.c_str()会出现错误
-    char buf[cmdStr.length()];
-    // memcpy(buf, cmdStr.c_str(), sizeof(buf));
+    CLoginCmd logInfo;
 
-    for(int i=0;i<cmdStr.length();i++)
-    {
-        buf[i]=cmdStr[i];
-    }
-    // printf("\n\n");
-    // for(int i=0;i<sizeof(buf);i++)
+	std::string testStr=cmdStr+" }";
+    std::cout<<testStr<<std::endl;
+    
+	std::istringstream iss(testStr);
+	cereal::JSONInputArchive archive1(iss);
+	archive1(cereal::make_nvp("logInfo", logInfo));
+	(logInfo.get_login_user()).print();
+
+
+    // std::vector<CUser> friendLists;
+    // CUser myTT;
+    // for(int i=0;i<10;i++)
     // {
-    //     printf("%x",buf[i]);
+    //     memcpy(&myTT,buf+sizeof(CLoginCmd)+sizeof(myTT)*i,sizeof(myTT));
+    //     myTT.print();
+    //     friendLists.push_back(myTT);
     // }
-
-    memcpy(&logInfo2,buf,sizeof(logInfo2));
-    (logInfo2.get_login_user()).print();
-
-    std::vector<CUser> friendLists;
-    CUser myTT;
-    for(int i=0;i<10;i++)
-    {
-        memcpy(&myTT,buf+sizeof(CLoginCmd)+sizeof(myTT)*i,sizeof(myTT));
-        myTT.print();
-        friendLists.push_back(myTT);
-    }
-    std::cout<<"to vector over"<<std::endl;
+    // std::cout<<"to vector over"<<std::endl;
     return 0;
 }
 

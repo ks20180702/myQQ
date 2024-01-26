@@ -3,6 +3,10 @@
 #include <k_total_head.h>
 #include "dataBase.h"
 
+#include <cereal/archives/json.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/string.hpp>
+
 /*消息对象
     by ks 2023-11-26
     move to dataObj in 2023-12-4
@@ -28,6 +32,15 @@ public:
     char *get_msg_dt() const;
     char *get_content() const;
     void print();
+
+    template <class Archive>
+    void serialize(Archive & ar)
+	{
+		ar(cereal::make_nvp("_sendId", _sendId),
+        cereal::make_nvp("_recvId", _recvId), 
+        cereal::make_nvp("_msgDateTime",std::string(_msgDateTime)), 
+        cereal::make_nvp("_content",std::string(_content)));
+	}
 
 private:
     int _sendId;

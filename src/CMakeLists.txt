@@ -40,8 +40,8 @@ link_directories("/usr/local/psqlodbc/lib")
 
 set(MAINFILE demoServer.cpp)
 set(MAINNAME ser)
-# set(MAINFILE main.cpp)
-# set(MAINNAME main)
+set(MAINFILE main.cpp)
+set(MAINNAME main)
 
 add_executable(${MAINNAME} ${MAINFILE} ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO} 
     ${COMMANDOBJ} ${DATAOBJ} ${MYSERVER} ${MYCLIENT})
