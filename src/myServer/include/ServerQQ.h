@@ -5,6 +5,7 @@
 #include "k_total_head.h"
 
 #include "loginCmd.h"
+#include "otlUse.h"
 
 #include <vector>
 
@@ -15,6 +16,8 @@ public:
     ~CServerQQ();
 
     int server_bind();
+
+    int connect_db(char *connectStr=nullptr);
 
     //运行程序，启动服务端
     //错误-1，
@@ -35,6 +38,9 @@ private:
     char _errMsg[128]="OK";
 
     int _serSoc;
+
+    //数据库操作对象
+    COtlUse _cmdOtlUse;
 };
 
 

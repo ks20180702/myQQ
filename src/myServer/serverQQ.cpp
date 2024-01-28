@@ -1,12 +1,25 @@
 #include "./include/serverQQ.h"
 
-
+#include "msg.h"
+#include <vector>
 /*
     这里有个好奇怪的问题，第一次启动ser时，客户端发送的KS_START，服务端可以接收到，
     但是发送不到客户端(客户端接收不到第一次发送的数据)
 */
-CServerQQ::CServerQQ()
+CServerQQ::CServerQQ():_cmdOtlUse()
 {
+}
+
+int CServerQQ::connect_db(char *connectStr)
+{
+    if(_cmdOtlUse.olt_init(connectStr)==-1) 
+    {
+        std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;
+        return -1;
+    }
+    else{
+        std::cout<<"connect db succeed"<<std::endl;
+    }
 }
 
 int CServerQQ::server_bind()
@@ -34,20 +47,20 @@ int CServerQQ::run()
     struct sockaddr_in cliAddr;
     socklen_t cliLen;
     size_t r,w;
-    char buf[1024*10]={0};
+    char buf[1024]={0};
     while(1)
     {
-        memset(buf,0,1024*10);
-        r=recvfrom(_serSoc,buf,1024*10,0,
+        memset(buf,0,1024);
+        r=recvfrom(_serSoc,buf,1024,0,
                 (struct sockaddr*)&cliAddr,&cliLen);
         if(r<0) {strcpy(_errMsg,"recvfrom error"); return -1;}
 
         // std::cout<<buf<<" "<<r<<std::endl;
         recv_cmd_part(buf,r);
 
-        w=sendto(_serSoc,buf,r,0,
-                (struct sockaddr*)&cliAddr,cliLen);
-        if(w<0) {strcpy(_errMsg,"sendto error"); return -1;}
+        // w=sendto(_serSoc,buf,r,0,
+        //         (struct sockaddr*)&cliAddr,cliLen);
+        // if(w<0) {strcpy(_errMsg,"sendto error"); return -1;}
     }
 }
 int CServerQQ::recv_cmd_part(char *buf,int readNum)
@@ -91,25 +104,20 @@ int CServerQQ::recv_cmd_part(char *buf,int readNum)
 int CServerQQ::param_cmd_str(std::string cmdStr)
 {
     CLoginCmd logInfo;
+    CmdBase::CmdType childCmdType;
+    // int childCmdType;
 
-	std::string testStr=cmdStr+" }";
+	std::string testStr=cmdStr+"\n}";
     std::cout<<testStr<<std::endl;
     
 	std::istringstream iss(testStr);
 	cereal::JSONInputArchive archive1(iss);
-	archive1(cereal::make_nvp("logInfo", logInfo));
-	(logInfo.get_login_user()).print();
+	archive1(cereal::make_nvp("logInfo._childCmdType", childCmdType));
+    std::cout<<childCmdType<<std::endl;
+	// archive1(cereal::make_nvp("logInfo", logInfo));
+    // std::cout<<logInfo.childCmdType<<std::endl;
+	// (logInfo.get_login_user()).print();
 
-
-    // std::vector<CUser> friendLists;
-    // CUser myTT;
-    // for(int i=0;i<10;i++)
-    // {
-    //     memcpy(&myTT,buf+sizeof(CLoginCmd)+sizeof(myTT)*i,sizeof(myTT));
-    //     myTT.print();
-    //     friendLists.push_back(myTT);
-    // }
-    // std::cout<<"to vector over"<<std::endl;
     return 0;
 }
 

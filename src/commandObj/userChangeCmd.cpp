@@ -7,11 +7,11 @@ CUserChangeCmd::CUserChangeCmd()
 
 int CUserChangeCmd::do_command()
 {
-    if(_cmdOtlUse.olt_init()==-1) 
-    {
-        std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;
-        return -1;
-    }
+    // if(_cmdOtlUse.olt_init()==-1) 
+    // {
+    //     std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;
+    //     return -1;
+    // }
 
     int dealOperRe;
     if(_operType==CHANGE_USER)

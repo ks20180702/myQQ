@@ -25,7 +25,7 @@ public:
     COtlUse();
     ~COtlUse();
 
-    int olt_init();
+    int olt_init(char *connectStr);
 
     // 判断用户是否存在
     // 错误-1，存在0，用户密码错误1,不存在2

@@ -23,6 +23,9 @@ int main()
     std::cout<<"main +++"<<std::endl;
 
     CServerQQ mySer;
+
+    mySer.connect_db();
+
     if(mySer.server_bind()==-1) mySer.show_error_detail();
 
     mySer.run();

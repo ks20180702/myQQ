@@ -20,7 +20,7 @@ int ClientQQ::select_init()
     FD_SET(0,&_globalFdset); //加入标准输入
     FD_SET(_cliSoc,&_globalFdset);
 }
-int ClientQQ::run(char *testStr,int n)
+int ClientQQ::run()
 {
     fd_set currFdset;
     struct sockaddr_in serAddr;
@@ -61,9 +61,7 @@ int ClientQQ::run(char *testStr,int n)
                 memset(inputDate,0,SEND_RECV_BUF_SIZE);
                 scanf("%s",inputDate);
 
-                // send_part(inputDate,strlen(inputDate),true);
-                // send_part(inputDate,strlen(inputDate),false);
-                send_part(testStr,n,true);
+                param_input_cmd(inputDate);
             }
         }
     }
@@ -140,18 +138,40 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
     return 0;
 
 }
+int ClientQQ::param_input_cmd(char *inputBuf)
+{
+    if(strcmp(inputBuf,"1")==0)
+    {
+        std::cout<<"[input == 1] run login "<<std::endl;
+
+        CUser myUser(10,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
+        CLoginCmd logInfo(myUser);
+
+        std::vector<CUser> myTest;
+        for(int i=0;i<10;i++)
+        {
+            CUser myUser(i,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
+            myTest.push_back(myUser);
+        }
+        logInfo.set_friend_lists(myTest);
+
+        std::ostringstream ss;
+        cereal::JSONOutputArchive archive(ss);
+        archive(cereal::make_nvp("logInfo._childCmdType", logInfo._childCmdType),cereal::make_nvp("logInfo", logInfo));
+        std::cout<<ss.str()<<std::endl;
+
+        send_part((char *)(ss.str().c_str()),ss.str().length(),true);
+    }
+    else{
+        std::cout<<"[input != 1] do nothing "<<std::endl;
+    }
+}
+
 int ClientQQ::param_cmd_str(std::string cmdStr)
 {
-    CLoginCmd *logInfo=(CLoginCmd *)new char [cmdStr.length()];;
-    memcpy(logInfo,cmdStr.c_str(),cmdStr.length());
+    std::cout<<"clientQQ::param_cmd_str  ...."<<std::endl;
 
-
-    std::vector<CUser> friendLists=logInfo->get_friend_lists();
-    for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
-    {
-        (*it).print();
-    }
-    (logInfo->get_login_user()).print();
+    std::cout<<cmdStr<<std::endl;
 
     return 0;
 }

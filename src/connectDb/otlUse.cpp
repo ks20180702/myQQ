@@ -1,10 +1,18 @@
 #include "./include/otlUse.h"
 
-int COtlUse::olt_init()
+int COtlUse::olt_init(char *connectStr)
 {
     otl_connect::otl_initialize(); // initialize the database API environment
     try{
-        _db.rlogon("DSN=pgsql;UID=postgres;PWD=123456;database=myQQ"); 
+        if(nullptr ==connectStr)
+        {
+            // _db.rlogon("DSN=pgsql;UID=postgres;PWD=123456;database=myQQ"); 
+            _db.rlogon("Driver=PostgreSQL;Servername=192.168.47.135;UserName=postgres;Password=123456;Database=myQQ"); 
+        }
+        else{
+            _db.rlogon(connectStr); 
+        }
+        
     }
     catch(otl_exception& p){ // intercept OTL exceptions
         strcpy(_errMsg,(char*)p.msg);
@@ -121,7 +129,7 @@ int COtlUse::add_user(CUser &addUser)
 {
     if(_connect_on()==-1) return -1;
     try{
-        char sqlStr[256]="INSERT into user_info_table (account,pwd,user_name,user_age) \  
+        char sqlStr[256]="INSERT into user_info_table (account,pwd,user_name,user_age) \
         values(:account<char[7]>,:pwd<char[16]>,:user_name<char[32]>,:user_age<int>)";
 
         //std::cout<<sqlStr<<std::endl;
@@ -279,7 +287,7 @@ int COtlUse::add_msg(CMsg &addMsg)
 {
     if(_connect_on()==-1) return -1;
     try{
-        char sqlStr[256]="INSERT into msg_info_table (msg_from_id,msg_to_id,msg_datetime,msg_content) \  
+        char sqlStr[256]="INSERT into msg_info_table (msg_from_id,msg_to_id,msg_datetime,msg_content) \
         values(:msg_from_id<int>,:msg_to_id<int>,:msg_datetime<char[32]>,:msg_content<char[511]>)";
 
         std::cout<<sqlStr<<std::endl;

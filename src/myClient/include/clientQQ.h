@@ -23,7 +23,7 @@ public:
 
     //运行程序，启动客户端
     //错误-1，成功则循环等待
-    int run(char *testStr,int n);
+    int run();
 
     //分批发送数据，暂定1024
     //错误-1，成功0
@@ -33,8 +33,12 @@ public:
     //按指定协议分批接收数据
     //错误-1，成功0
     int recv_cmd_part(char *buf,int readNum);
-    
-    //解析字符串，转成指定的指令对象
+
+    //解析输入的字符串命令，1登录...
+    //返回：错误-1
+    int param_input_cmd(char *inputBuf);
+
+    //解析接收字符串，转成指定的指令对象
     //错误-1，
     int param_cmd_str(std::string cmdStr);
 

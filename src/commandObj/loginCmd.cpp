@@ -2,18 +2,20 @@
 #include "./include/notOperatorCmd.h"
 
 CLoginCmd::CLoginCmd()
-    :_loginUser(){}
+    :_loginUser(){_childCmdType=LOGIN_CMD;}
+    
 CLoginCmd::CLoginCmd(CUser &loginUser)
 {
     _loginUser=loginUser;
+    _childCmdType=LOGIN_CMD;
 }  
 int CLoginCmd::do_command()
 {
-    if(_cmdOtlUse.olt_init()==-1) 
-    {
-        std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;
-        return -1;
-    }
+    // if(_cmdOtlUse.olt_init()==-1) 
+    // {
+    //     std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;
+    //     return -1;
+    // }
     
     int existRe,friendNumRe,notRevcMsgNumRe;
 

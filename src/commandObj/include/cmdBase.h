@@ -30,6 +30,12 @@ public:
     //获取当前指令执行完后将发送给(客户端/服务器端)的指令
     virtual std::shared_ptr<CmdBase> get_send_command()=0;
 
+    enum CmdType
+    {
+        LOGIN_CMD,
+        DTAT_MSG_CMD,
+    };
+
 protected:
     COtlUse _cmdOtlUse;
 
@@ -38,6 +44,9 @@ protected:
 
     //将要发送的指令
     std::shared_ptr<CmdBase> _send_command_ptr;
+
+public:
+    CmdType _childCmdType;
 };
 
 
