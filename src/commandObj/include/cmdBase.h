@@ -22,7 +22,7 @@ public:
     virtual ~CmdBase(){};
 
     //执行当前指令
-    virtual int do_command()=0;
+    virtual int do_command(COtlUse &cmdOtlUse)=0;
 
     //下一条需执行的指令
     virtual std::shared_ptr<CmdBase> get_next_command()=0;
@@ -47,6 +47,8 @@ protected:
 
 public:
     CmdType _childCmdType;
+
+    bool _childDoCommandReturn; //执行do_command的结果，成功true，失败false
 };
 
 

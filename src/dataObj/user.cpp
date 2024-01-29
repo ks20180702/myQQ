@@ -23,7 +23,6 @@ void CUser::set_user_info(int userId,char *account,char *password,
     char* userName,int16_t userAge,char *currentIp,char *lastLeaveTime)
 {
     //此处需加一个长度检查
-    
     _userId=userId;
     strcpy(_account,account);
     strcpy(_password,password);

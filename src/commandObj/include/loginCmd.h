@@ -25,7 +25,7 @@ public:
     // 收到该指令时，执行预设功能
     //  1.检查用户账号密码，2.获取该用户的好友数据，3.获取消息未接收情况
     // 错误-1，成功0
-    virtual int do_command() override;
+    virtual int do_command(COtlUse &cmdOtlUse) override;
 
     //下一条需执行的指令
     //空指令
@@ -50,9 +50,8 @@ public:
     //设置好友列表
     void set_friend_lists(std::vector<CUser> &friendLists);
 
-    // //获取当前对象大小
-    // int get_obj_sizeof();
-
+    //设置未接收消息
+    void set_not_recv_msg_lists(std::vector<CMsg> &notRecvMsgsLists);
 
     //序列化
     template <class Archive>

@@ -9,7 +9,7 @@ CFriendshipChangeCmd::CFriendshipChangeCmd(CUser &myUser,CUser &friendUser,Opera
     _friendUser = friendUser;
     _friendType=friendType;
 }
-int CFriendshipChangeCmd::do_command()
+int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
 {
     if(_cmdOtlUse.olt_init()==-1) 
     {

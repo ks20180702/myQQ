@@ -27,7 +27,7 @@ public:
 
     // 执行好友关系处理相关命令
     // 错误-1，0增加成功/修改成功
-    virtual int do_command() override;
+    virtual int do_command(COtlUse &cmdOtlUse) override;
 
     //下一条需执行的指令
     //空指令

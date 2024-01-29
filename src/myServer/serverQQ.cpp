@@ -105,7 +105,6 @@ int CServerQQ::param_cmd_str(std::string cmdStr)
 {
     CLoginCmd logInfo;
     CmdBase::CmdType childCmdType;
-    // int childCmdType;
 
 	std::string testStr=cmdStr+"\n}";
     std::cout<<testStr<<std::endl;
@@ -114,11 +113,18 @@ int CServerQQ::param_cmd_str(std::string cmdStr)
 	cereal::JSONInputArchive archive1(iss);
 	archive1(cereal::make_nvp("logInfo._childCmdType", childCmdType));
     std::cout<<childCmdType<<std::endl;
-	// archive1(cereal::make_nvp("logInfo", logInfo));
+	archive1(cereal::make_nvp("logInfo", logInfo));
     // std::cout<<logInfo.childCmdType<<std::endl;
-	// (logInfo.get_login_user()).print();
+	(logInfo.get_login_user()).print();
 
-    return 0;
+    std::cout<<(logInfo.get_login_user()).get_password();
+
+    // logInfo.do_command(_cmdOtlUse);
+    // std::ostringstream ss;
+    // cereal::JSONOutputArchive archive(ss);
+    // archive(cereal::make_nvp("logInfo._childCmdType", logInfo._childCmdType),cereal::make_nvp("logInfo", logInfo));
+    // std::cout<<ss.str()<<std::endl;
+    // return 0;
 }
 
 int& CServerQQ::get_socket()

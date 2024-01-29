@@ -13,7 +13,7 @@ public:
     ~CNotOperatorCmd() override{};
 
     //执行当前指令
-    virtual int do_command() override {
+    virtual int do_command(COtlUse &cmdOtlUse) override {
         std::cout<<"[Info]  this is null cmd"<<std::endl;
     };
 

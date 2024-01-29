@@ -1,5 +1,7 @@
 #include "./include/otlUse.h"
 
+COtlUse::COtlUse(){}
+
 int COtlUse::olt_init(char *connectStr)
 {
     otl_connect::otl_initialize(); // initialize the database API environment
@@ -325,15 +327,6 @@ string COtlUse::get_errmsg()
     return _errMsg;
 }
 
-COtlUse::COtlUse()
-{
-
-}
-COtlUse::~COtlUse()
-{
-    _db.logoff();
-}
-
 int COtlUse::_connect_on()
 {
     if(_db.connected!=1)
@@ -345,4 +338,9 @@ int COtlUse::_connect_on()
     else{
         return 0;
     }
+}
+
+COtlUse::~COtlUse()
+{
+    _db.logoff();
 }

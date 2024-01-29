@@ -44,7 +44,8 @@ int main()
     std::cout<<sizeof(ss.str())<<std::endl;
     std::cout<<ss.str().length()<<std::endl;
 
-    myCli.run((char *)(ss.str().c_str()),ss.str().length());
+    // myCli.run((char *)(ss.str().c_str()),ss.str().length());
+    myCli.run();
     myCli.show_error_detail();
     
     std::cout<<"main over"<<std::endl;

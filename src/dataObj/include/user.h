@@ -53,11 +53,11 @@ public:
 	{
 		ar(cereal::make_nvp("_userId", _userId),
         cereal::make_nvp("_account",std::string(_account)), 
-        cereal::make_nvp("_password",std::string(_password)), 
-        cereal::make_nvp("_userName",std::string(_userName)), 
+        cereal::make_nvp("_password",_password), 
+        cereal::make_nvp("_userName",_userName), 
         cereal::make_nvp("_userAge",_userAge), 
-        cereal::make_nvp("_currentIp",std::string(_currentIp)), 
-        cereal::make_nvp("_lastLeaveTime",std::string(_lastLeaveTime)));
+        cereal::make_nvp("_currentIp",_currentIp), 
+        cereal::make_nvp("_lastLeaveTime",_lastLeaveTime));
 	}
 
 private:

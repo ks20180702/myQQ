@@ -5,7 +5,7 @@ CUserChangeCmd::CUserChangeCmd()
     :_operatorUser(){}
 
 
-int CUserChangeCmd::do_command()
+int CUserChangeCmd::do_command(COtlUse &cmdOtlUse)
 {
     // if(_cmdOtlUse.olt_init()==-1) 
     // {

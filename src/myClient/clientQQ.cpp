@@ -144,16 +144,8 @@ int ClientQQ::param_input_cmd(char *inputBuf)
     {
         std::cout<<"[input == 1] run login "<<std::endl;
 
-        CUser myUser(10,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
+        CUser myUser(1,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
         CLoginCmd logInfo(myUser);
-
-        std::vector<CUser> myTest;
-        for(int i=0;i<10;i++)
-        {
-            CUser myUser(i,(char*)"123456",(char*)"123456",(char*)"ks",23,"","2023-11-29 19:32:00");
-            myTest.push_back(myUser);
-        }
-        logInfo.set_friend_lists(myTest);
 
         std::ostringstream ss;
         cereal::JSONOutputArchive archive(ss);
