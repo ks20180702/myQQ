@@ -22,8 +22,8 @@ void CMsg::set_msg_info(int sendId,int recvId,char *msgDateTime,char* content)
     
     _sendId=sendId;
     _recvId=recvId;
-    strcpy(_msgDateTime,msgDateTime);
-    strcpy(_content,content);
+    _msgDateTime=std::string(msgDateTime);
+    _content=std::string(content);
 }
 // 用发送id和接收id来判断是否相等
 bool CMsg::operator==(const CMsg &other)
@@ -52,11 +52,11 @@ int CMsg::get_recv_id() const
 }
 char *CMsg::get_msg_dt() const
 {
-    return (char*)_msgDateTime;
+    return (char*)(_msgDateTime.c_str());
 }
 char *CMsg::get_content() const
 {
-    return (char*)_content;
+    return (char*)(_content.c_str());
 }
 void CMsg::print()
 {

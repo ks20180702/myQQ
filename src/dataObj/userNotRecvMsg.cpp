@@ -12,7 +12,7 @@ CUserNotRecvMsg::CUserNotRecvMsg(int friendId,char* userName,int msgNum)
 void CUserNotRecvMsg::set_info(int friendId,char* friendName,int msgNum)
 {
     _friendId=friendId;
-    strcpy(_friendName,friendName);
+    _friendName=std::string(friendName);
     _msgNum=msgNum;
 }
 
@@ -22,7 +22,7 @@ int CUserNotRecvMsg::get_friend_id() const
 }
 char *CUserNotRecvMsg::get_friend_name() const
 {
-    return (char *)_friendName;
+    return (char *)(_friendName.c_str());
 }
 int CUserNotRecvMsg::get_msg_num() const
 {

@@ -117,14 +117,12 @@ int CServerQQ::param_cmd_str(std::string cmdStr)
     // std::cout<<logInfo.childCmdType<<std::endl;
 	(logInfo.get_login_user()).print();
 
-    std::cout<<(logInfo.get_login_user()).get_password();
-
-    // logInfo.do_command(_cmdOtlUse);
-    // std::ostringstream ss;
-    // cereal::JSONOutputArchive archive(ss);
-    // archive(cereal::make_nvp("logInfo._childCmdType", logInfo._childCmdType),cereal::make_nvp("logInfo", logInfo));
-    // std::cout<<ss.str()<<std::endl;
-    // return 0;
+    logInfo.do_command(_cmdOtlUse);
+    std::ostringstream ss;
+    cereal::JSONOutputArchive archive(ss);
+    archive(cereal::make_nvp("logInfo._childCmdType", logInfo._childCmdType),cereal::make_nvp("logInfo", logInfo));
+    std::cout<<ss.str()<<std::endl;
+    return 0;
 }
 
 int& CServerQQ::get_socket()

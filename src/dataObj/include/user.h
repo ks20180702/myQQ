@@ -52,7 +52,7 @@ public:
     void serialize(Archive & ar)
 	{
 		ar(cereal::make_nvp("_userId", _userId),
-        cereal::make_nvp("_account",std::string(_account)), 
+        cereal::make_nvp("_account",_account), 
         cereal::make_nvp("_password",_password), 
         cereal::make_nvp("_userName",_userName), 
         cereal::make_nvp("_userAge",_userAge), 
@@ -62,12 +62,12 @@ public:
 
 private:
     int _userId;
-    char _account[7];
-    char _password[16];
-    char _userName[32];
+    std::string _account;
+    std::string _password;
+    std::string _userName;
     int16_t _userAge;
-    char _currentIp[17];  //当前用户的登录ip
-    char _lastLeaveTime[32]; //当前用户上一次的离开时间
+    std::string _currentIp;  //当前用户的登录ip
+    std::string _lastLeaveTime; //当前用户上一次的离开时间
 };
 
 #endif

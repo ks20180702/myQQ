@@ -24,12 +24,12 @@ void CUser::set_user_info(int userId,char *account,char *password,
 {
     //此处需加一个长度检查
     _userId=userId;
-    strcpy(_account,account);
-    strcpy(_password,password);
-    strcpy(_userName,userName);
+    _account=std::string(account);
+    _password=std::string(password);
+    _userName=std::string(userName);
     _userAge=userAge;
-    strcpy(_currentIp,currentIp);
-    strcpy(_lastLeaveTime,lastLeaveTime);
+    _currentIp=std::string(currentIp);
+    _lastLeaveTime=std::string(lastLeaveTime);
 }
 void CUser::set_id(int id)
 {
@@ -42,15 +42,15 @@ int CUser::get_id() const
 }
 char *CUser::get_account() const
 {
-    return (char*)_account;
+    return (char*)(_account.c_str());
 }
 char *CUser::get_password() const
 {
-    return (char*)_password;
+    return (char*)(_password.c_str());
 }
 char *CUser::get_name() const
 {
-    return (char*)_userName;
+    return (char*)(_userName.c_str());
 }   
 int16_t CUser::get_age() const
 {
@@ -58,11 +58,11 @@ int16_t CUser::get_age() const
 }
 char * CUser::get_ip() const
 {
-    return (char*)_currentIp;
+    return (char*)(_currentIp.c_str());
 }
 char *CUser::get_leave_time() const
 {
-    return (char*)_lastLeaveTime;
+    return (char*)(_lastLeaveTime.c_str());
 }
 void CUser::print()
 {
@@ -76,7 +76,7 @@ void CUser::print()
 }
 bool CUser::operator==(const CUser &other)
 {
-    if(strcmp(_account,other.get_account())==0) return true;
+    if(strcmp(_account.c_str(),other.get_account())==0) return true;
     else return false;
 }
 CUser &CUser::operator=(const CUser &other)

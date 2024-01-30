@@ -38,15 +38,15 @@ public:
 	{
 		ar(cereal::make_nvp("_sendId", _sendId),
         cereal::make_nvp("_recvId", _recvId), 
-        cereal::make_nvp("_msgDateTime",std::string(_msgDateTime)), 
-        cereal::make_nvp("_content",std::string(_content)));
+        cereal::make_nvp("_msgDateTime",_msgDateTime), 
+        cereal::make_nvp("_content",_content));
 	}
 
 private:
     int _sendId;
     int _recvId;
-    char _msgDateTime[32];
-    char _content[512];
+    std::string _msgDateTime;
+    std::string _content;
 };
 
 #endif

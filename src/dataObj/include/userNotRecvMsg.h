@@ -2,6 +2,11 @@
 #define __USERNOTRECVMSG_H__
 #include <k_total_head.h>
 #include "dataBase.h"
+
+#include <cereal/archives/json.hpp>
+#include <cereal/types/vector.hpp>
+#include <cereal/types/string.hpp>
+
 /*
     用户未读的好友消息数量类
 */
@@ -22,12 +27,20 @@ public:
     int get_msg_num() const;
     void print();
 
+    template <class Archive>
+    void serialize(Archive & ar)
+	{
+		ar(cereal::make_nvp("_friendId", _friendId),
+        cereal::make_nvp("_friendName", _friendName), 
+        cereal::make_nvp("_msgNum",_msgNum));
+	}
+
 private:
     //好友id
     int _friendId;
 
     //好友昵称
-    char _friendName[32];
+    std::string _friendName;
 
     //未读消息数量
     int _msgNum;  
