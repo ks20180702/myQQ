@@ -52,7 +52,6 @@ int ClientQQ::run()
                 if(r<0) {strcpy(_errMsg,"recvfrom error "); return -1;}
 
                 recv_cmd_part(buf,r);
-                
             }
             else if(i==0) // i/o输入
             {
@@ -65,41 +64,6 @@ int ClientQQ::run()
             }
         }
     }
-}
-int ClientQQ::send_part(char *sendStr,int n,bool isCmd)
-{
-    size_t w;
-    char *sendTemp=sendStr;
-    int nowNum=0,sendLen;
-    
-    if(isCmd==true)
-    {
-        w=sendto(_cliSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
-        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
-    }
-
-    while(nowNum<n)
-    {
-        if((n-nowNum)>=SEND_RECV_BUF_SIZE)
-        {
-            sendLen=SEND_RECV_BUF_SIZE;
-        }
-        else{
-            sendLen=n-nowNum;
-        }
-        w=sendto(_cliSoc,sendTemp+nowNum,sendLen,0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
-        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
-
-        nowNum+=w;
-    }
-
-    if(isCmd==true)
-    {
-        w=sendto(_cliSoc,"KS_END",sizeof("KS_END"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
-        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
-    }
-
-    return 0;
 }
 int ClientQQ::recv_cmd_part(char *buf,int readNum)
 {
@@ -136,8 +100,44 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
         }
     }
     return 0;
-
 }
+
+int ClientQQ::send_part(char *sendStr,int n,bool isCmd)
+{
+    size_t w;
+    char *sendTemp=sendStr;
+    int nowNum=0,sendLen;
+    
+    if(isCmd==true)
+    {
+        w=sendto(_cliSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
+        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+    }
+
+    while(nowNum<n)
+    {
+        if((n-nowNum)>=SEND_RECV_BUF_SIZE)
+        {
+            sendLen=SEND_RECV_BUF_SIZE;
+        }
+        else{
+            sendLen=n-nowNum;
+        }
+        w=sendto(_cliSoc,sendTemp+nowNum,sendLen,0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
+        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+
+        nowNum+=w;
+    }
+
+    if(isCmd==true)
+    {
+        w=sendto(_cliSoc,"KS_END",sizeof("KS_END"),0,(struct sockaddr*)&_serAddr,sizeof(_serAddr));
+        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+    }
+
+    return 0;
+}
+
 int ClientQQ::param_input_cmd(char *inputBuf)
 {
     if(strcmp(inputBuf,"1")==0)

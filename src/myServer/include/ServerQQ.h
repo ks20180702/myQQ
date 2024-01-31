@@ -8,6 +8,7 @@
 #include "otlUse.h"
 
 #include <vector>
+#include <memory>
 
 class CServerQQ
 {
@@ -23,9 +24,17 @@ public:
     //错误-1，
     int run();
 
+    //接收字节流
+    //成功0，失败-1
     int recv_cmd_part(char *buf,int readNum);
 
+    //解析接收的字节流，转成对应对象
+    //成功0，异常-1(暂时未增加)
     int param_cmd_str(std::string cmdStr);
+
+    //发送字节流
+    //成功0，异常-1
+    int send_part(char *sendStr,int n,sockaddr_in &cliAddr);
 
     char *get_error();
 
@@ -41,6 +50,9 @@ private:
 
     //数据库操作对象
     COtlUse _cmdOtlUse;
+
+    //指向指令对象
+    std::shared_ptr<CmdBase> _nowUseCmdObj=nullptr;
 };
 
 

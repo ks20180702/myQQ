@@ -15,7 +15,7 @@ class CmdBase
 {
 public:
     CmdBase()
-        :_cmdOtlUse(),_next_command_ptr(nullptr),_send_command_ptr(nullptr){
+        :_next_command_ptr(nullptr),_send_command_ptr(nullptr){
             std::cout<<"[I] this is base class"<<std::endl;
         };
 
@@ -37,8 +37,6 @@ public:
     };
 
 protected:
-    COtlUse _cmdOtlUse;
-
     // 下一条指令
     std::shared_ptr<CmdBase> _next_command_ptr;
 

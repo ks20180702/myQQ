@@ -55,13 +55,16 @@ int CServerQQ::run()
                 (struct sockaddr*)&cliAddr,&cliLen);
         if(r<0) {strcpy(_errMsg,"recvfrom error"); return -1;}
 
-        // std::cout<<buf<<" "<<r<<std::endl;
         recv_cmd_part(buf,r);
 
-        // w=sendto(_serSoc,buf,r,0,
-        //         (struct sockaddr*)&cliAddr,cliLen);
-        // if(w<0) {strcpy(_errMsg,"sendto error"); return -1;}
+        // if(strcmp(buf,"KS_END")==0)
+        // {
+        //     std::cout<<"recv KS_END"<<std::endl;
+        //     break;
+        // }
+
     }
+    // send_part()
 }
 int CServerQQ::recv_cmd_part(char *buf,int readNum)
 {
@@ -103,25 +106,61 @@ int CServerQQ::recv_cmd_part(char *buf,int readNum)
 
 int CServerQQ::param_cmd_str(std::string cmdStr)
 {
-    CLoginCmd logInfo;
     CmdBase::CmdType childCmdType;
 
-	std::string testStr=cmdStr+"\n}";
-    std::cout<<testStr<<std::endl;
-    
-	std::istringstream iss(testStr);
-	cereal::JSONInputArchive archive1(iss);
-	archive1(cereal::make_nvp("logInfo._childCmdType", childCmdType));
-    std::cout<<childCmdType<<std::endl;
-	archive1(cereal::make_nvp("logInfo", logInfo));
-    // std::cout<<logInfo.childCmdType<<std::endl;
-	(logInfo.get_login_user()).print();
+	std::istringstream iss(cmdStr+"\n}");
+	cereal::JSONInputArchive archive(iss);
+	archive(cereal::make_nvp("logInfo._childCmdType", childCmdType));
 
-    logInfo.do_command(_cmdOtlUse);
+    if(CmdBase::LOGIN_CMD== childCmdType)
+    {
+        CLoginCmd logInfo;
+        archive(cereal::make_nvp("logInfo", logInfo));
+
+        if(nullptr!= _nowUseCmdObj)
+        {
+            _nowUseCmdObj=nullptr;
+        }
+        _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
+    }
+
+    _nowUseCmdObj->do_command(_cmdOtlUse);
+
+    //这里放在基类中，子类重载
     std::ostringstream ss;
-    cereal::JSONOutputArchive archive(ss);
-    archive(cereal::make_nvp("logInfo._childCmdType", logInfo._childCmdType),cereal::make_nvp("logInfo", logInfo));
+    cereal::JSONOutputArchive archiveOut(ss);
+    archiveOut(cereal::make_nvp("logInfo",*(std::dynamic_pointer_cast<CLoginCmd>(_nowUseCmdObj))));
     std::cout<<ss.str()<<std::endl;
+    return 0;
+}
+
+int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)
+{
+    size_t w;
+    char *sendTemp=sendStr;
+    int nowNum=0,sendLen;
+
+    w=sendto(_serSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
+    if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+
+    while(nowNum<n)
+    {
+        if((n-nowNum)>=SEND_RECV_BUF_SIZE)
+        {
+            sendLen=SEND_RECV_BUF_SIZE;
+        }
+        else{
+            sendLen=n-nowNum;
+        }
+        w=sendto(_serSoc,sendTemp+nowNum,sendLen,0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
+        if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+
+        nowNum+=w;
+    }
+
+    w=sendto(_serSoc,"KS_END",sizeof("KS_END"),0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
+    if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+
     return 0;
 }
 

@@ -13,17 +13,17 @@ int CUserChangeCmd::do_command(COtlUse &cmdOtlUse)
     //     return -1;
     // }
 
-    int dealOperRe;
-    if(_operType==CHANGE_USER)
-    {
-        dealOperRe=_cmdOtlUse.change_user(_operatorUser);
-    }
-    else if(_operType==ADD_USER)
-    {
-        dealOperRe=_cmdOtlUse.add_user(_operatorUser);
-    }
+    // int dealOperRe;
+    // if(_operType==CHANGE_USER)
+    // {
+    //     dealOperRe=_cmdOtlUse.change_user(_operatorUser);
+    // }
+    // else if(_operType==ADD_USER)
+    // {
+    //     dealOperRe=_cmdOtlUse.add_user(_operatorUser);
+    // }
 
-    if(dealOperRe==-1) {std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    // if(dealOperRe==-1) {std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;return -1;}
 }
 
 std::shared_ptr<CmdBase> CUserChangeCmd::get_next_command()

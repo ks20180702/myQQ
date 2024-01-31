@@ -57,7 +57,8 @@ public:
     template <class Archive>
     void serialize(Archive & ar)
 	{
-		ar(cereal::make_nvp("_loginUser", _loginUser),
+		ar(cereal::make_nvp("_childDoCommandReturn", _childDoCommandReturn),
+        cereal::make_nvp("_loginUser", _loginUser),
         cereal::make_nvp("_friendLists", _friendLists), 
         cereal::make_nvp("_notRecvMsgsLists", _notRecvMsgsLists));
 	}
