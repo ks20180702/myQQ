@@ -29,24 +29,9 @@ int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
     if(dealOperRe==-1) {std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;return -1;}
 }
 
-std::shared_ptr<CmdBase> CFriendshipChangeCmd::get_next_command()
+std::string CFriendshipChangeCmd::get_command_obj_json()
 {
-    if(_next_command_ptr == nullptr)
-    {
-        _next_command_ptr=std::make_shared<CNotOperatorCmd>();
-    }
-    
-    return _next_command_ptr;
-}
-
-std::shared_ptr<CmdBase> CFriendshipChangeCmd::get_send_command()
-{
-    if(_send_command_ptr == nullptr)
-    {
-        _send_command_ptr=std::make_shared<CNotOperatorCmd>();
-    }
-    
-    return _send_command_ptr;
+    return "";
 }
 
 void CFriendshipChangeCmd::set_user(CUser &myUser)

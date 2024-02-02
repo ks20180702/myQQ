@@ -37,19 +37,16 @@ int CLoginCmd::do_command(COtlUse &cmdOtlUse)
     _childDoCommandReturn=true;
     return 0;
 }
-std::shared_ptr<CmdBase> CLoginCmd::get_next_command()
-{
-    if(_next_command_ptr == nullptr)
-    {
-        _next_command_ptr=std::make_shared<CNotOperatorCmd>();
-    }
-    
-    return _next_command_ptr;
-}
 
-std::shared_ptr<CmdBase> CLoginCmd::get_send_command()
-{   
-    return (std::shared_ptr<CmdBase>)this;
+std::string CLoginCmd::get_command_obj_json()
+{
+    std::ostringstream ss;
+    cereal::JSONOutputArchive archiveOut(ss);
+    archiveOut(cereal::make_nvp("logInfo._childCmdType", this->_childCmdType),cereal::make_nvp("logInfo", *this));
+
+    // std::cout<<ss.str()<<std::endl;
+
+    return ss.str();
 }
 
 void CLoginCmd::set_login_user(CUser &loginUser)

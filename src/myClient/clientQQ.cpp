@@ -102,6 +102,40 @@ int ClientQQ::recv_cmd_part(char *buf,int readNum)
     return 0;
 }
 
+int ClientQQ::param_cmd_str(std::string cmdStr)
+{
+    CmdBase::CmdType childCmdType;
+
+	std::istringstream iss(cmdStr+"\n}");
+	cereal::JSONInputArchive archive(iss);
+	archive(cereal::make_nvp("logInfo._childCmdType", childCmdType));
+
+    if(CmdBase::LOGIN_CMD== childCmdType)
+    {
+        CLoginCmd loginInfo;
+        archive(cereal::make_nvp("logInfo", loginInfo));
+        (loginInfo.get_login_user()).print();
+        if(!loginInfo._childDoCommandReturn)
+        {
+            std::cout<<"[E]  账号密码错误，请重新输入"<<std::endl;
+            return -1;
+        }
+        std::cout<<"[I]  欢迎登录"<<std::endl;
+        std::vector<CUser> friendLists=loginInfo.get_friend_lists();
+        std::vector<CMsg> notRecvMsgsLists=loginInfo.get_not_recv_msg_lists();
+        for(std::vector<CUser>::iterator it=friendLists.begin();it!=friendLists.end();it++)
+        {
+            (*it).print();
+        }
+        for(std::vector<CMsg>::iterator it=notRecvMsgsLists.begin();it!=notRecvMsgsLists.end();it++)
+        {
+            (*it).print();
+        }
+    }
+
+    return 0;
+}
+
 int ClientQQ::send_part(char *sendStr,int n,bool isCmd)
 {
     size_t w;
@@ -159,14 +193,6 @@ int ClientQQ::param_input_cmd(char *inputBuf)
     }
 }
 
-int ClientQQ::param_cmd_str(std::string cmdStr)
-{
-    std::cout<<"clientQQ::param_cmd_str  ...."<<std::endl;
-
-    std::cout<<cmdStr<<std::endl;
-
-    return 0;
-}
 char *ClientQQ::get_error()
 {
     return (char*)_errMsg;

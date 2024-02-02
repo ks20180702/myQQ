@@ -48,23 +48,29 @@ int CServerQQ::run()
     socklen_t cliLen;
     size_t r,w;
     char buf[1024]={0};
+    std::string cmdJosnStr;
     while(1)
     {
-        memset(buf,0,1024);
-        r=recvfrom(_serSoc,buf,1024,0,
-                (struct sockaddr*)&cliAddr,&cliLen);
-        if(r<0) {strcpy(_errMsg,"recvfrom error"); return -1;}
+        while(1)
+        {
+            memset(buf,0,1024);
+            r=recvfrom(_serSoc,buf,1024,0,
+                    (struct sockaddr*)&cliAddr,&cliLen);
+            if(r<0) {strcpy(_errMsg,"recvfrom error"); return -1;}
 
-        recv_cmd_part(buf,r);
+            recv_cmd_part(buf,r);
 
-        // if(strcmp(buf,"KS_END")==0)
-        // {
-        //     std::cout<<"recv KS_END"<<std::endl;
-        //     break;
-        // }
+            if(strcmp(buf,"KS_END")==0)
+            {
+                std::cout<<"[over] recv KS_END now over"<<std::endl;
+                break;
+            }
 
+        }
+        cmdJosnStr=_nowUseCmdObj->get_command_obj_json();
+
+        send_part((char *)(cmdJosnStr.c_str()),cmdJosnStr.length(),cliAddr);
     }
-    // send_part()
 }
 int CServerQQ::recv_cmd_part(char *buf,int readNum)
 {
@@ -125,12 +131,7 @@ int CServerQQ::param_cmd_str(std::string cmdStr)
     }
 
     _nowUseCmdObj->do_command(_cmdOtlUse);
-
-    //这里放在基类中，子类重载
-    std::ostringstream ss;
-    cereal::JSONOutputArchive archiveOut(ss);
-    archiveOut(cereal::make_nvp("logInfo",*(std::dynamic_pointer_cast<CLoginCmd>(_nowUseCmdObj))));
-    std::cout<<ss.str()<<std::endl;
+    
     return 0;
 }
 

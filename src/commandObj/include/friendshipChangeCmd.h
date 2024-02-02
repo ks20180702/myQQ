@@ -29,9 +29,7 @@ public:
     // 错误-1，0增加成功/修改成功
     virtual int do_command(COtlUse &cmdOtlUse) override;
 
-    //下一条需执行的指令
-    //空指令
-    virtual std::shared_ptr<CmdBase> get_next_command() override ;
+    virtual std::string get_command_obj_json() override;
 
     //获取当前指令执行完后将发送给(客户端/服务器端)的指令
     // 发送的指令都是修改OperatorFriendShipType后的该条指令
@@ -40,7 +38,7 @@ public:
         // 2.ADD_FRIEND 修改为(ADD_FRIEND_TO_CLIENT)并发送给对应好友客户端
         // 3.当前为客户端，同意：发送ADD_FRIEND_TO_SERVER
                      //   拒绝：空指令
-    virtual std::shared_ptr<CmdBase> get_send_command() override;
+    // virtual std::shared_ptr<CmdBase> get_send_command() override;
 
     //设置需操作的用户，用户的好友，操作类型
     void set_user(CUser &myUser);

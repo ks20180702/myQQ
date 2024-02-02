@@ -14,34 +14,21 @@
 class CmdBase
 {
 public:
-    CmdBase()
-        :_next_command_ptr(nullptr),_send_command_ptr(nullptr){
-            std::cout<<"[I] this is base class"<<std::endl;
-        };
+    CmdBase(){};
 
     virtual ~CmdBase(){};
 
     //执行当前指令
     virtual int do_command(COtlUse &cmdOtlUse)=0;
 
-    //下一条需执行的指令
-    virtual std::shared_ptr<CmdBase> get_next_command()=0;
-
-    //获取当前指令执行完后将发送给(客户端/服务器端)的指令
-    virtual std::shared_ptr<CmdBase> get_send_command()=0;
+    //获取当前指令对象的json字符串
+    virtual std::string get_command_obj_json()=0;
 
     enum CmdType
     {
         LOGIN_CMD,
         DTAT_MSG_CMD,
     };
-
-protected:
-    // 下一条指令
-    std::shared_ptr<CmdBase> _next_command_ptr;
-
-    //将要发送的指令
-    std::shared_ptr<CmdBase> _send_command_ptr;
 
 public:
     CmdType _childCmdType;
