@@ -4,6 +4,8 @@
 #include "k_socket_include.h"
 #include "k_total_head.h"
 #include "loginCmd.h"
+#include "userChangeCmd.h"
+#include "friendshipChangeCmd.h"
 
 #include <vector>
 

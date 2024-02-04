@@ -59,6 +59,12 @@ public:
     // 错误-1，0成功
     int add_friend_info(CUser &myUser,CUser &myFriend);
 
+    // 增加用户好友通过id
+    // 错误-1，0成功
+    int add_friend_info_by_id(int id,int friendId);
+
+    int change_request_friend_type(int requestUserId,int requestedId,int requestType);
+
     // 获取离线后未接收的消息详细数据(包括内容)
     // return 未接收到的消息条数，错误返回-1
     int get_not_recv_msg(int recvId,vector<CMsg> &notRecvMsgs);

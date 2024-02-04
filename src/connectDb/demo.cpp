@@ -1,8 +1,9 @@
-// #include <iostream>
-// #include "otlUse.h"
+#include <iostream>
+#include "otlUse.h"
 
-// using namespace std;
-// #include "user.h"
+using namespace std;
+#include "user.h"
+
 // int main()
 // {
 // 	std::cout<<"main +++"<<std::endl;
@@ -29,16 +30,4 @@
 // 	return 0;// int selectReturn;
 // }
 
-
-// {
-//     COtlUse otlUse;
-// 	CUser myUser((char*)"112222",(char*)"123456",(char*)"ks",23),myUser2;
-// 	otlUse.olt_init(); // otlUse.olt_init()==-1
-// 	std::cout<<otlUse.select_user_exist(myUser)<<std::endl;
-// 	myUser.print();
-// 	otlUse.set_user_id_by_account(myUser);
-// 	myUser.print();
-// 	otlUse.get_user_by_id(myUser.get_id(),myUser2);
-// 	myUser2.print();
-// }
 

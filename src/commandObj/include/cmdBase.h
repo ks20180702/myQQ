@@ -28,6 +28,8 @@ public:
     {
         LOGIN_CMD,
         DTAT_MSG_CMD,
+        USER_CHANGE_CMD,
+        FRIEND_SHIP_CHANGE_CMD,
     };
 
 public:

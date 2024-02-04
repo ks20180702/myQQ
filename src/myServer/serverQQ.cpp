@@ -67,6 +67,8 @@ int CServerQQ::run()
             }
 
         }
+        //
+        
         cmdJosnStr=_nowUseCmdObj->get_command_obj_json();
 
         send_part((char *)(cmdJosnStr.c_str()),cmdJosnStr.length(),cliAddr);
@@ -115,24 +117,54 @@ int CServerQQ::param_cmd_str(std::string cmdStr)
     CmdBase::CmdType childCmdType;
 
 	std::istringstream iss(cmdStr+"\n}");
+    std::cout<<cmdStr+"\n}"<<std::endl;
 	cereal::JSONInputArchive archive(iss);
 	archive(cereal::make_nvp("logInfo._childCmdType", childCmdType));
 
+    if(nullptr!= _nowUseCmdObj)
+    {
+        _nowUseCmdObj=nullptr;
+    }
     if(CmdBase::LOGIN_CMD== childCmdType)
     {
         CLoginCmd logInfo;
         archive(cereal::make_nvp("logInfo", logInfo));
 
-        if(nullptr!= _nowUseCmdObj)
-        {
-            _nowUseCmdObj=nullptr;
-        }
         _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
+    }
+    else if(CmdBase::USER_CHANGE_CMD== childCmdType)
+    {
+        CUserChangeCmd logInfo;
+        archive(cereal::make_nvp("logInfo", logInfo));
+
+        _nowUseCmdObj=std::make_shared<CUserChangeCmd>(logInfo);
+    }
+    else if(CmdBase::FRIEND_SHIP_CHANGE_CMD== childCmdType)
+    {
+        CFriendshipChangeCmd logInfo;
+        archive(cereal::make_nvp("logInfo", logInfo));
+
+        _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(logInfo);
     }
 
     _nowUseCmdObj->do_command(_cmdOtlUse);
     
     return 0;
+}
+void CServerQQ::Test()
+{  
+    // _cmdOtlUse.change_request_friend_type(1,2,4);
+
+
+    // // 不报错，但是修改无效
+    // CUser user((char*)"121212",(char*)"123456",(char*)"add_24",23);
+    // std::cout<<_cmdOtlUse.set_user_id_by_account(user)<<std::endl;
+    // user.print();
+
+    // user.set_user_info(user.get_id(),user.get_account(),user.get_password(),
+    // (char*)"add====",23,"","2024-1-16 19:32:00");
+    // std::cout<<_cmdOtlUse.change_user(user)<<std::endl;
+    // std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;
 }
 
 int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)

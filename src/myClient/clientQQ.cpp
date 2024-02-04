@@ -174,6 +174,7 @@ int ClientQQ::send_part(char *sendStr,int n,bool isCmd)
 
 int ClientQQ::param_input_cmd(char *inputBuf)
 {
+    std::string cmdJsonStr;
     if(strcmp(inputBuf,"1")==0)
     {
         std::cout<<"[input == 1] run login "<<std::endl;
@@ -188,8 +189,39 @@ int ClientQQ::param_input_cmd(char *inputBuf)
 
         send_part((char *)(ss.str().c_str()),ss.str().length(),true);
     }
+    else if(strcmp(inputBuf,"2")==0)
+    {
+        std::cout<<"[input == 2] run user change "<<std::endl;
+
+        CUser myUser(1,(char*)"141414",(char*)"123456",(char*)"ks_13",23,"","2023-11-29 19:32:00");
+        CUserChangeCmd userChangeCmd;
+        userChangeCmd.set_operator_user(myUser);
+        //数据库操作修改用户信息好像有点问题，不报错但是没反应
+        // userChangeCmd.set_operator_type(CUserChangeCmd::CHANGE_USER);
+        userChangeCmd.set_operator_type(CUserChangeCmd::ADD_USER);
+
+        cmdJsonStr=userChangeCmd.get_command_obj_json();
+
+        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
+    }
+    else if(strcmp(inputBuf,"3")==0)
+    {
+        std::cout<<"[input == 3] run user change "<<std::endl;
+
+        CUser user1((char*)"141414",(char*)"123456",(char*)"ks_14",23);
+        CUser userFriend((char*)"131313",(char*)"123456",(char*)"ks_13",23);
+        CFriendshipChangeCmd friendShipChange;
+
+        friendShipChange.set_user(user1);
+        friendShipChange.set_friend_user(userFriend);
+        friendShipChange.set_operator_type(CFriendshipChangeCmd::DELETT_FRIEND);
+
+        cmdJsonStr=friendShipChange.get_command_obj_json();
+
+        send_part((char *)(cmdJsonStr.c_str()),cmdJsonStr.length(),true);
+    }
     else{
-        std::cout<<"[input != 1] do nothing "<<std::endl;
+        std::cout<<"[input != 1 and 2] do nothing "<<std::endl;
     }
 }
 

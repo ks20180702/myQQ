@@ -111,14 +111,17 @@ int COtlUse::change_user(CUser &needChangeUser)
 {
     if(_connect_on()==-1) return -1;
     try{
-        char sqlStr[256]={0};
-        sprintf(sqlStr,
-        "UPDATE user_info_table set pwd='%s',user_name='%s',user_age=%d ,\
-        current_ip='%s' ,last_leave_time = '%s' where account='%s'",
-        needChangeUser.get_password(),needChangeUser.get_name(),needChangeUser.get_age(),
-        needChangeUser.get_ip(),needChangeUser.get_leave_time(),needChangeUser.get_account());
-        //std::cout<<sqlStr<<std::endl;
+        char sqlStr[256]="UPDATE user_info_table set pwd=:pwd<char[16]>, user_name=:user_name<char[255]>, \
+        user_age=:user_age<int>,current_ip=:current_ip<char[17]>,last_leave_time=:last_leave_time<char[32]> \
+        WHERE account=:account<char[7]>";
+
+        std::cout<<sqlStr<<std::endl;
         otl_stream ostream(2, sqlStr,_db); 
+
+        otl_write_row(ostream,needChangeUser.get_password(),needChangeUser.get_name(),
+        (int)needChangeUser.get_age(),needChangeUser.get_ip(),needChangeUser.get_leave_time(),
+        needChangeUser.get_account());
+
         return 0;
     }
     catch(otl_exception& p)
@@ -129,6 +132,9 @@ int COtlUse::change_user(CUser &needChangeUser)
 }
 int COtlUse::add_user(CUser &addUser)
 {
+    //当用户存在时，这里会报错，然后不知道咋的，导致服务器端直接崩了
+
+
     if(_connect_on()==-1) return -1;
     try{
         char sqlStr[256]="INSERT into user_info_table (account,pwd,user_name,user_age) \
@@ -152,9 +158,11 @@ int COtlUse::del_friendship(int id,int friendId)
     try{
         char sqlStr[128];
         sprintf(sqlStr,
-        "DELETE from user_friend_info_table where user_id = %d and user_friend_id=%d",
-        id,friendId);
-        //std::cout<<sqlStr<<std::endl;
+        "DELETE from user_friend_info_table where (user_id = %d and user_friend_id=%d) \
+        or (user_friend_id = %d and user_id=%d)",
+        id,friendId,id,friendId);
+        
+        std::cout<<sqlStr<<std::endl;
         otl_stream ostream(2, sqlStr,_db); 
         ostream.flush();
         return 0;
@@ -184,6 +192,48 @@ int COtlUse::add_friend_info(CUser &myUser,CUser &myFriend)
         return -1;
     }
 }
+int COtlUse::add_friend_info_by_id(int id,int friendId)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[128]="INSERT into user_friend_info_table (user_id,user_friend_id) \
+        VALUES (:user_id<int>,:user_friend_id<int>)";
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+        ostream<<id<<friendId;
+        ostream.flush();
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    }
+}
+int COtlUse::change_request_friend_type(int requestUserId,int requestedId,int requestType)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[512]="INSERT into request_friend_table_info (request_user_id,requested_id,request_type) \
+        VALUES (:request_user_id<int>,:requested_id<int>,:request_type<int>) \
+        on conflict (request_user_id,requested_id) \
+        do update set request_type=EXCLUDED.request_type ";
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db);
+
+        otl_write_row(ostream,requestUserId,requestedId,requestType);
+
+        ostream.flush();
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    }
+}
+
+
 int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
 {
     if(_connect_on()==-1) return -1;

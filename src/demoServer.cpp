@@ -7,7 +7,7 @@ using namespace std;
 #include "loginCmd.h"
 #include "userChangeCmd.h"
 #include "msg.h"
-#include "dataCmd.h"
+// #include "dataCmd.h"
 
 #include "userNotRecvMsg.h"
 #include "serverQQ.h"
@@ -25,6 +25,7 @@ int main()
     CServerQQ mySer;
 
     mySer.connect_db();
+    // mySer.Test();
 
     if(mySer.server_bind()==-1) mySer.show_error_detail();
 

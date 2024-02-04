@@ -6,6 +6,8 @@
 
 #include "loginCmd.h"
 #include "otlUse.h"
+#include "userChangeCmd.h"
+#include "friendshipChangeCmd.h"
 
 #include <vector>
 #include <memory>
@@ -42,6 +44,9 @@ public:
     void show_error_detail();
 
     int& get_socket();
+
+    //测试方法
+    void Test();
 
 private:
     char _errMsg[128]="OK";

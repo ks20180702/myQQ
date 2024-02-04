@@ -1,33 +1,36 @@
 #include "./include/userChangeCmd.h"
-#include "./include/notOperatorCmd.h"
 
 CUserChangeCmd::CUserChangeCmd()
-    :_operatorUser(){}
+    :_operatorUser(){_childCmdType=USER_CHANGE_CMD;}
 
 
 int CUserChangeCmd::do_command(COtlUse &cmdOtlUse)
 {
-    // if(_cmdOtlUse.olt_init()==-1) 
-    // {
-    //     std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;
-    //     return -1;
-    // }
+    _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 
-    // int dealOperRe;
-    // if(_operType==CHANGE_USER)
-    // {
-    //     dealOperRe=_cmdOtlUse.change_user(_operatorUser);
-    // }
-    // else if(_operType==ADD_USER)
-    // {
-    //     dealOperRe=_cmdOtlUse.add_user(_operatorUser);
-    // }
+    int dealOperRe;
+    if(_operType==CHANGE_USER)
+    {
+        dealOperRe=cmdOtlUse.change_user(_operatorUser);
+    }
+    else if(_operType==ADD_USER)
+    {
+        dealOperRe=cmdOtlUse.add_user(_operatorUser);
+    }
 
-    // if(dealOperRe==-1) {std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+
+    _childDoCommandReturn=true;
+
+    return 0;
 }
 std::string CUserChangeCmd::get_command_obj_json()
 {
-    return "";
+    std::ostringstream ss;
+    cereal::JSONOutputArchive archiveOut(ss);
+    archiveOut(cereal::make_nvp("logInfo._childCmdType", this->_childCmdType),cereal::make_nvp("logInfo", *this));
+
+    return ss.str();
 }
 
 

@@ -1,5 +1,4 @@
 #include "./include/loginCmd.h"
-#include "./include/notOperatorCmd.h"
 
 CLoginCmd::CLoginCmd()
     :_loginUser(){_childCmdType=LOGIN_CMD;}
@@ -43,8 +42,6 @@ std::string CLoginCmd::get_command_obj_json()
     std::ostringstream ss;
     cereal::JSONOutputArchive archiveOut(ss);
     archiveOut(cereal::make_nvp("logInfo._childCmdType", this->_childCmdType),cereal::make_nvp("logInfo", *this));
-
-    // std::cout<<ss.str()<<std::endl;
 
     return ss.str();
 }
