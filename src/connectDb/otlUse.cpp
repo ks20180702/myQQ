@@ -156,14 +156,14 @@ int COtlUse::del_friendship(int id,int friendId)
 {
     if(_connect_on()==-1) return -1;
     try{
-        char sqlStr[128];
-        sprintf(sqlStr,
-        "DELETE from user_friend_info_table where (user_id = %d and user_friend_id=%d) \
-        or (user_friend_id = %d and user_id=%d)",
-        id,friendId,id,friendId);
+        char sqlStr[256]="DELETE from user_friend_info_table where \
+        (user_id =:f1<int> and user_friend_id=:f2<int>) \
+        or (user_friend_id=:f3<int> and user_id=:f4<int>)";
         
-        std::cout<<sqlStr<<std::endl;
-        otl_stream ostream(2, sqlStr,_db); 
+        //std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db);
+        otl_write_row(ostream,id,friendId,id,friendId);
+
         ostream.flush();
         return 0;
     }
