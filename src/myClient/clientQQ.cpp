@@ -108,7 +108,7 @@ int ClientQQ::param_cmd_str(std::string cmdStr)
 
 	std::istringstream iss(cmdStr+"\n}");
 	cereal::JSONInputArchive archive(iss);
-	archive(cereal::make_nvp("logInfo._childCmdType", childCmdType));
+	archive(cereal::make_nvp("_childCmdType", childCmdType));
 
     if(CmdBase::LOGIN_CMD== childCmdType)
     {
@@ -184,7 +184,7 @@ int ClientQQ::param_input_cmd(char *inputBuf)
 
         std::ostringstream ss;
         cereal::JSONOutputArchive archive(ss);
-        archive(cereal::make_nvp("logInfo._childCmdType", logInfo._childCmdType),cereal::make_nvp("logInfo", logInfo));
+        archive(cereal::make_nvp("_childCmdType", logInfo._childCmdType),cereal::make_nvp("logInfo", logInfo));
         std::cout<<ss.str()<<std::endl;
 
         send_part((char *)(ss.str().c_str()),ss.str().length(),true);
@@ -214,7 +214,8 @@ int ClientQQ::param_input_cmd(char *inputBuf)
 
         friendShipChange.set_user(user1);
         friendShipChange.set_friend_user(userFriend);
-        friendShipChange.set_operator_type(CFriendshipChangeCmd::DELETT_FRIEND);
+        // friendShipChange.set_operator_type(CFriendshipChangeCmd::DELETT_FRIEND); //删除，已测通
+        friendShipChange.set_operator_type(CFriendshipChangeCmd::ADD_FRIEND);
 
         cmdJsonStr=friendShipChange.get_command_obj_json();
 

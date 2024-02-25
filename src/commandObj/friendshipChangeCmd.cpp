@@ -15,15 +15,17 @@ int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
     _childDoCommandReturn=false;
 
     int dealOperRe=0;
+    cmdOtlUse.set_user_id_by_account(_myUser);
+    cmdOtlUse.set_user_id_by_account(_friendUser);
+
     if(_friendType==DELETT_FRIEND)
     {
-        cmdOtlUse.set_user_id_by_account(_myUser);
-        cmdOtlUse.set_user_id_by_account(_friendUser);
         dealOperRe=cmdOtlUse.del_friendship(_myUser.get_id(),_friendUser.get_id());
     }
     else if(_friendType==ADD_FRIEND)
     {
         // dealOperRe=cmdOtlUse
+        cmdOtlUse.change_request_friend_type(_myUser.get_id(),_friendUser.get_id(),4);
     }
 
     if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
@@ -35,11 +37,12 @@ int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
 
 std::string CFriendshipChangeCmd::get_command_obj_json()
 {
-    std::ostringstream ss;
-    cereal::JSONOutputArchive archiveOut(ss);
-    archiveOut(cereal::make_nvp("logInfo._childCmdType", this->_childCmdType),cereal::make_nvp("logInfo", *this));
-
-    return ss.str();
+    std::ostringstream ostrStream;
+    cereal::JSONOutputArchive jsonOA(ostrStream);
+    super_json_add_make_nvp(jsonOA,this->_childCmdType);
+    
+    jsonOA(cereal::make_nvp("friendShipInfo", *this));
+    return ostrStream.str();
 }
 
 void CFriendshipChangeCmd::set_user(CUser &myUser)

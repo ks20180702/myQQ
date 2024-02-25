@@ -32,6 +32,17 @@ public:
     virtual int do_command(COtlUse &cmdOtlUse) override;
 
     virtual std::string get_command_obj_json() override;
+    
+    //重新加载接收到的对象(服务器存储有用数据的对象)
+    virtual void reload_recv_obj_by_str(std::string cmdStr) override{};
+
+    //重新加载接收到的对象(服务器存储有用数据的对象)
+    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) override {};
+
+    //显示返回信息(用于查看服务器端执行情况)
+    virtual void show_do_command_info() override {};
+
+
 
     //设置需操作的用户，用户的好友，操作类型
     void set_user(CUser &myUser);

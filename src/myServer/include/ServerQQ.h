@@ -8,6 +8,7 @@
 #include "otlUse.h"
 #include "userChangeCmd.h"
 #include "friendshipChangeCmd.h"
+#include "cmdCreateFactory.h"
 
 #include <vector>
 #include <memory>
@@ -57,7 +58,9 @@ private:
     COtlUse _cmdOtlUse;
 
     //指向指令对象
-    std::shared_ptr<CmdBase> _nowUseCmdObj=nullptr;
+    std::shared_ptr<CmdBase> _nowUseCmdObj;
+
+    std::shared_ptr<CmdCreateFactory> _factoryCreater;
 };
 
 

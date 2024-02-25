@@ -8,23 +8,22 @@
 #include <cereal/types/vector.hpp>
 #include <cereal/types/string.hpp>
 
-#include <memory>
 
 struct Dat
 {
-	char x[7]="nihao\0";
+	int x;
 	int y;
 	template <class Archive>
 	void serialize(Archive & ar)
 	{
-		ar(cereal::make_nvp("x", std::string(x)), cereal::make_nvp("y", y));
+		ar(cereal::make_nvp("x", x), cereal::make_nvp("y", y));
 	}
 };
 
 
 struct Data
 {
-	Dat dat;
+	Dat dat = { 2,3 };
 	int index = 1;
 	double d[3] = { 1.0,2.33e-5,1000000.0 };
 	std::vector<std::string> vs;
@@ -33,6 +32,7 @@ struct Data
 	template <class Archive>
 	void serialize(Archive & ar)
 	{
+		//加上_出现解析不到的问题 ar(cereal::make_nvp("_buf",std::string(buf)));
 		ar(cereal::make_nvp("Dat", dat), cereal::make_nvp("index", index), cereal::make_nvp("d", d), cereal::make_nvp("vs", vs),cereal::make_nvp("buf",std::string(buf)));
 	}
 	
@@ -41,23 +41,21 @@ struct Data
 int main()
 {
     Data mydata,mydata2;
-	// mydata.dat.x ="nihao\0";
+	mydata.dat.x = 50;
 	mydata.dat.y = 150;
 	std::string s1 = "中文字符串/*-+!@#$%^&";
 	std::string s2 = "english/*-+!@#$%^&";
 	mydata.vs.push_back(s1);
 	mydata.vs.push_back(s2);
 	
-	//测试使用智能指针没什么问题
-	std::shared_ptr<Data> testSharePtr=std::make_shared<Data>(mydata);
-	std::cout<<testSharePtr->buf<<std::endl;
+
 	// std::ofstream file("out.json");
     // // std::string pp;
     std::ostringstream ss;
     
 	cereal::JSONOutputArchive archive(ss);
-	// archive(CEREAL_NVP(*testSharePtr));
-	archive(cereal::make_nvp("mydata", *testSharePtr));
+	archive(CEREAL_NVP(mydata),CEREAL_NVP(mydata.index));
+	// archive(cereal::make_nvp("mydata", mydata));
     std::cout<<ss.str()<<std::endl;
 
 
@@ -66,15 +64,16 @@ int main()
 	*/
 	// std::ifstream file("out.json");
 	std::string testStr=ss.str()+" }";
-	// std::cout<<testStr<<std::endl;
+	std::cout<<testStr<<std::endl;
 	std::istringstream iss(testStr);
 	std::string buf;
+	int index;
 	cereal::JSONInputArchive archive1(iss);
 	archive1(cereal::make_nvp("mydata", mydata2));
+	archive1(cereal::make_nvp("mydata.index", index));
 	// archive1(cereal::make_nvp("mydata.buf", buf));
-	std::cout<<mydata2.dat.x<<std::endl;
-	std::cout<<mydata2.dat.y<<std::endl;
-	// std::cout<<buf<<std::endl;
+	std::cout<<mydata2.buf<<std::endl;
+	std::cout<<index<<std::endl;
 }
 
 // ------------------------------------------

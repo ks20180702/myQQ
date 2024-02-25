@@ -6,9 +6,7 @@
     这里有个好奇怪的问题，第一次启动ser时，客户端发送的KS_START，服务端可以接收到，
     但是发送不到客户端(客户端接收不到第一次发送的数据)
 */
-CServerQQ::CServerQQ():_cmdOtlUse()
-{
-}
+CServerQQ::CServerQQ():_cmdOtlUse(),_nowUseCmdObj(nullptr),_factoryCreater(nullptr){}
 
 int CServerQQ::connect_db(char *connectStr)
 {
@@ -20,6 +18,8 @@ int CServerQQ::connect_db(char *connectStr)
     else{
         std::cout<<"connect db succeed"<<std::endl;
     }
+
+    _factoryCreater=std::make_shared<CmdCreateFactory>();
 }
 
 int CServerQQ::server_bind()
@@ -51,6 +51,7 @@ int CServerQQ::run()
     std::string cmdJosnStr;
     while(1)
     {
+        memset(&cliAddr,0,sizeof(cliAddr));
         while(1)
         {
             memset(buf,0,1024);
@@ -65,10 +66,12 @@ int CServerQQ::run()
                 std::cout<<"[over] recv KS_END now over"<<std::endl;
                 break;
             }
-
         }
         //
-        
+        // std::cout<<"_serSoc = "<<_serSoc<<std::endl;
+        // std::cout<<"s_addr = "<<inet_ntoa(cliAddr.sin_addr)<<std::endl;
+        // printf("port=%d\n",ntohs(cliAddr.sin_port));
+
         cmdJosnStr=_nowUseCmdObj->get_command_obj_json();
 
         send_part((char *)(cmdJosnStr.c_str()),cmdJosnStr.length(),cliAddr);
@@ -86,7 +89,6 @@ int CServerQQ::recv_cmd_part(char *buf,int readNum)
         {
             std::cout<<"tempStr cmd =  "<<tempStr.length()<<std::endl;
             param_cmd_str(tempStr);
-            std::cout<<"param_cmd_str is over"<<std::endl;
 
             cmdStrOver=false;
             tempStr="";
@@ -118,34 +120,37 @@ int CServerQQ::param_cmd_str(std::string cmdStr)
 
 	std::istringstream iss(cmdStr+"\n}");
     std::cout<<cmdStr+"\n}"<<std::endl;
-	cereal::JSONInputArchive archive(iss);
-	archive(cereal::make_nvp("logInfo._childCmdType", childCmdType));
 
-    if(nullptr!= _nowUseCmdObj)
-    {
-        _nowUseCmdObj=nullptr;
-    }
-    if(CmdBase::LOGIN_CMD== childCmdType)
-    {
-        CLoginCmd logInfo;
-        archive(cereal::make_nvp("logInfo", logInfo));
+	cereal::JSONInputArchive jsonIA(iss);
+	jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
 
-        _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
-    }
-    else if(CmdBase::USER_CHANGE_CMD== childCmdType)
-    {
-        CUserChangeCmd logInfo;
-        archive(cereal::make_nvp("logInfo", logInfo));
+    _nowUseCmdObj=shared_ptr<CmdBase>(_factoryCreater->create_cmd_ptr(childCmdType));
+    _nowUseCmdObj->reload_recv_obj_by_json(jsonIA);
+    // if(nullptr!= _nowUseCmdObj)
+    // {
+    //     _nowUseCmdObj=nullptr;
+    // }
+    // if(CmdBase::LOGIN_CMD== childCmdType)
+    // {
+    //     CLoginCmd logInfo;
+    //     archive(cereal::make_nvp("logInfo", logInfo));
 
-        _nowUseCmdObj=std::make_shared<CUserChangeCmd>(logInfo);
-    }
-    else if(CmdBase::FRIEND_SHIP_CHANGE_CMD== childCmdType)
-    {
-        CFriendshipChangeCmd logInfo;
-        archive(cereal::make_nvp("logInfo", logInfo));
+    //     _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
+    // }
+    // else if(CmdBase::USER_CHANGE_CMD== childCmdType)
+    // {
+    //     CUserChangeCmd logInfo;
+    //     archive(cereal::make_nvp("logInfo", logInfo));
 
-        _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(logInfo);
-    }
+    //     _nowUseCmdObj=std::make_shared<CUserChangeCmd>(logInfo);
+    // }
+    // else if(CmdBase::FRIEND_SHIP_CHANGE_CMD== childCmdType)
+    // {
+    //     CFriendshipChangeCmd logInfo;
+    //     archive(cereal::make_nvp("logInfo", logInfo));
+
+    //     _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(logInfo);
+    // }
 
     _nowUseCmdObj->do_command(_cmdOtlUse);
     
@@ -186,6 +191,8 @@ int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)
             sendLen=n-nowNum;
         }
         w=sendto(_serSoc,sendTemp+nowNum,sendLen,0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
+        write(1,sendTemp+nowNum,sendLen);
+
         if(w<0) {strcpy(_errMsg,"send error"); return -1;}
 
         nowNum+=w;
