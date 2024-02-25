@@ -3,3 +3,6 @@ bin
 build
 lib/*
 lib
+src_bak
+3rdlib
+libSrc
