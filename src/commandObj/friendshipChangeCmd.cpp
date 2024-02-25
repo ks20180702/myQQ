@@ -44,6 +44,35 @@ std::string CFriendshipChangeCmd::get_command_obj_json()
     jsonOA(cereal::make_nvp("friendShipInfo", *this));
     return ostrStream.str();
 }
+void CFriendshipChangeCmd::reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) 
+{
+    jsonIA(cereal::make_nvp("friendShipInfo", *this));
+}
+
+void CFriendshipChangeCmd::show_do_command_info()
+{
+    _myUser.print();
+    _friendUser.print();
+    
+    switch (_friendType)
+    {
+    case DELETT_FRIEND:
+        std::cout<<"DELETT_FRIEND = "<<DELETT_FRIEND<<std::endl;
+        break;
+    case ADD_FRIEND:
+        std::cout<<"ADD_FRIEND = "<<ADD_FRIEND<<std::endl;
+        break;
+    case ADD_FRIEND_TO_CLIENT:
+        std::cout<<"ADD_FRIEND_TO_CLIENT = "<<ADD_FRIEND_TO_CLIENT<<std::endl;
+        break;
+    case ADD_FRIEND_TO_SERVER:
+        std::cout<<"ADD_FRIEND_TO_SERVER = "<<ADD_FRIEND_TO_SERVER<<std::endl;
+        break;
+    default:
+        break;
+    }
+
+}
 
 void CFriendshipChangeCmd::set_user(CUser &myUser)
 {

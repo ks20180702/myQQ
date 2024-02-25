@@ -118,39 +118,13 @@ int CServerQQ::param_cmd_str(std::string cmdStr)
 {
     CmdBase::CmdType childCmdType;
 
+    // std::cout<<cmdStr+"\n}"<<std::endl;
 	std::istringstream iss(cmdStr+"\n}");
-    std::cout<<cmdStr+"\n}"<<std::endl;
-
 	cereal::JSONInputArchive jsonIA(iss);
 	jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
 
     _nowUseCmdObj=shared_ptr<CmdBase>(_factoryCreater->create_cmd_ptr(childCmdType));
     _nowUseCmdObj->reload_recv_obj_by_json(jsonIA);
-    // if(nullptr!= _nowUseCmdObj)
-    // {
-    //     _nowUseCmdObj=nullptr;
-    // }
-    // if(CmdBase::LOGIN_CMD== childCmdType)
-    // {
-    //     CLoginCmd logInfo;
-    //     archive(cereal::make_nvp("logInfo", logInfo));
-
-    //     _nowUseCmdObj=std::make_shared<CLoginCmd>(logInfo);
-    // }
-    // else if(CmdBase::USER_CHANGE_CMD== childCmdType)
-    // {
-    //     CUserChangeCmd logInfo;
-    //     archive(cereal::make_nvp("logInfo", logInfo));
-
-    //     _nowUseCmdObj=std::make_shared<CUserChangeCmd>(logInfo);
-    // }
-    // else if(CmdBase::FRIEND_SHIP_CHANGE_CMD== childCmdType)
-    // {
-    //     CFriendshipChangeCmd logInfo;
-    //     archive(cereal::make_nvp("logInfo", logInfo));
-
-    //     _nowUseCmdObj=std::make_shared<CFriendshipChangeCmd>(logInfo);
-    // }
 
     _nowUseCmdObj->do_command(_cmdOtlUse);
     

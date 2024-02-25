@@ -22,7 +22,7 @@ public:
         FRIEND_SHIP_CHANGE_CMD,
     };
 public:
-    CmdBase(){};
+    CmdBase(){_childDoCommandReturn=false;};
 
     virtual ~CmdBase(){};
 
@@ -33,7 +33,12 @@ public:
     virtual std::string get_command_obj_json()=0;
 
     //重新加载接收到的对象(服务器存储有用数据的对象)
-    virtual void reload_recv_obj_by_str(std::string cmdStr)=0;
+    virtual void reload_recv_obj_by_str(std::string cmdStr)
+    {    
+        std::istringstream istrStream(cmdStr+"\n}");
+        cereal::JSONInputArchive jsonIA(istrStream);
+        this->reload_recv_obj_by_json(jsonIA);
+    };
 
     //重新加载接收到的对象(服务器存储有用数据的对象)
     virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA)=0;
@@ -41,11 +46,13 @@ public:
     //显示返回信息(用于查看服务器端执行情况)
     virtual void show_do_command_info()=0;
 
+    //本条指令执行完后，接下来是否需要发送请求到服务器端
+    // virtual void do_next_cmd()=0;
+
     //由于序列化时必须加入子类子类类型，所以放到父类中
     void super_json_add_make_nvp(cereal::JSONOutputArchive &jsonOA,CmdBase::CmdType inputCmdType ){
         jsonOA(cereal::make_nvp("_childCmdType", inputCmdType));
     };
-
 
 public:
     CmdType _childCmdType;

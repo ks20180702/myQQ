@@ -29,21 +29,15 @@ public:
 
     // 执行好友关系处理相关命令
     // 错误-1，0增加成功/修改成功
-    virtual int do_command(COtlUse &cmdOtlUse) override;
+    virtual int do_command(COtlUse &cmdOtlUse);
 
-    virtual std::string get_command_obj_json() override;
-    
-    //重新加载接收到的对象(服务器存储有用数据的对象)
-    virtual void reload_recv_obj_by_str(std::string cmdStr) override{};
+    virtual std::string get_command_obj_json();
 
     //重新加载接收到的对象(服务器存储有用数据的对象)
-    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) override {};
+    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA);
 
-    //显示返回信息(用于查看服务器端执行情况)
-    virtual void show_do_command_info() override {};
-
-
-
+    virtual void show_do_command_info();
+     
     //设置需操作的用户，用户的好友，操作类型
     void set_user(CUser &myUser);
     void set_friend_user(CUser &friendUser);

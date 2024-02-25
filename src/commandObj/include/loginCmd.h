@@ -25,19 +25,15 @@ public:
     // 收到该指令时，执行预设功能
     //  1.检查用户账号密码，2.获取该用户的好友数据，3.获取消息未接收情况
     // 错误-1，成功0
-    virtual int do_command(COtlUse &cmdOtlUse) override;
+    virtual int do_command(COtlUse &cmdOtlUse);
     
     //获取当前指令对象的json字符串
-    virtual std::string get_command_obj_json() override;
+    virtual std::string get_command_obj_json();
 
     //重新加载接收到的对象(服务器存储有用数据的对象)
-    virtual void reload_recv_obj_by_str(std::string cmdStr) override;
+    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA);
 
-    //重新加载接收到的对象(服务器存储有用数据的对象)
-    virtual void reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) override;
-
-    //显示返回信息(用于查看服务器端执行情况)
-    virtual void show_do_command_info() override;
+    virtual void show_do_command_info();
 
     // 设置当前的登录对象
     void set_login_user(CUser &loginUser);
@@ -49,13 +45,15 @@ public:
     std::vector<CUser> &get_friend_lists();
 
     //返回未接收消息的引用
-    vector<CMsg> &get_not_recv_msg_lists();
+    std::vector<CMsg> &get_not_recv_msg_lists();
 
     //设置好友列表
     void set_friend_lists(std::vector<CUser> &friendLists);
 
     //设置未接收消息
     void set_not_recv_msg_lists(std::vector<CMsg> &notRecvMsgsLists);
+
+
 
     //序列化
     template <class Archive>

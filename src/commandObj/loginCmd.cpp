@@ -50,13 +50,6 @@ std::string CLoginCmd::get_command_obj_json()
     return ostrStream.str();
 }
 
-void CLoginCmd::reload_recv_obj_by_str(std::string cmdStr)
-{
-    std::istringstream istrStream(cmdStr+"\n}");
-	cereal::JSONInputArchive jsonIA(istrStream);
-    reload_recv_obj_by_json(jsonIA);
-}
-
 void CLoginCmd::reload_recv_obj_by_json(cereal::JSONInputArchive &jsonIA) 
 {
     jsonIA(cereal::make_nvp("logInfo", *this));
@@ -67,7 +60,7 @@ void CLoginCmd::show_do_command_info()
     if(!_childDoCommandReturn)
     {
         std::cout<<"[E]  账号密码错误，请重新输入"<<std::endl;
-        // return -1;
+        return ;
     }
     std::cout<<"[I]  欢迎登录"<<std::endl;
     std::vector<CUser> friendLists=get_friend_lists();
