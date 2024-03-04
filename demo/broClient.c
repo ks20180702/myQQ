@@ -24,7 +24,7 @@ int main()
 
     serAddr.sin_family=AF_INET;
     serAddr.sin_port=htons(SERVER_PORT);
-    inet_pton(AF_INET,"192.168.47.136",&(serAddr.sin_addr));
+    inet_pton(AF_INET,"192.168.47.135",&(serAddr.sin_addr));
     // inet_pton(AF_INET,"192.168.47.255",&(serAddr.sin_addr));
     serLen=sizeof(serAddr);
 

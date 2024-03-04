@@ -50,6 +50,6 @@ add_executable(${MAINNAME} ${MAINFILE} ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO}
 #     ${COMMANDOBJ} ${DATAOBJ} ${MYSERVER} ${MYCLIENT})
 
 target_link_libraries(${MAINNAME} /usr/local/psqlodbc/lib/psqlodbca.so)
-
+target_link_libraries(${MAINNAME} -lpthread)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

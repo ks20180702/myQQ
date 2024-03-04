@@ -12,7 +12,7 @@
 
 #include <vector>
 #include <memory>
-
+#include <map>
 class CServerQQ
 {
 public:
@@ -22,6 +22,12 @@ public:
     int server_bind();
 
     int connect_db(char *connectStr=nullptr);
+
+    // 由于pthread_create不能用非静态成员函数作为回调，所以套一层，该函数用于调用实际执行的成员函数
+    static void* pthread_fun(void *arg);
+    // 线程中实际执行的函数
+    void pthread_recv_and_send_msg();
+
 
     //运行程序，启动服务端
     //错误-1，
@@ -56,6 +62,8 @@ private:
 
     //数据库操作对象
     COtlUse _cmdOtlUse;
+
+    std::map<string,string> _clientCmdStrMap;
 
     //指向指令对象
     std::shared_ptr<CmdBase> _nowUseCmdObj;

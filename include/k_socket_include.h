@@ -11,4 +11,6 @@
 #define SERVER_PORT 7070
 #define SEND_RECV_BUF_SIZE 128//1024
 
+#define MAX_EPOLL_SIZE 100
+
 #endif
