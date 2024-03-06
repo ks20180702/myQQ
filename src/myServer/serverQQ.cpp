@@ -57,7 +57,6 @@ void* CServerQQ::pthread_fun(void *arg)
     CServerQQ *thiz=static_cast<CServerQQ *>(arg);
 
     pthread_t id = pthread_self();
-    std::cout<<"this pthread id = "<<id<<std::endl;
 
     thiz->pthread_recv_and_send_msg();
     std::cout<<thiz->get_error()<<std::endl;
@@ -72,7 +71,7 @@ void CServerQQ::pthread_recv_and_send_msg()
     socklen_t cliLen;
     size_t r,w;
     char buf[1024]={0};
-    std::string cmdJosnStr,cliUrl;
+    std::string returnCmdJosnStr,cliUrl;
     map<string,string>::iterator cliIt;
 
     cliLen=sizeof(cliAddr);
@@ -97,6 +96,7 @@ void CServerQQ::pthread_recv_and_send_msg()
                 if(strcmp(buf,"KS_START")==0)
                 {
                     _clientCmdStrMap.insert(map<string,string>::value_type(cliUrl,""));
+                    std::cout<<"ip = "<<cliUrl<<" is start "<<std::endl;
                 }
             }
             //非第一次且不为指令结束标记，那就加起来
@@ -104,8 +104,11 @@ void CServerQQ::pthread_recv_and_send_msg()
                 if(strcmp(buf,"KS_END")==0)
                 {                    
                     //执行接收到的完整的指令，执行完毕后，清除掉指令
-                    param_cmd_str(cliIt->second);
+                    param_cmd_str(cliIt->second,returnCmdJosnStr);
                     _clientCmdStrMap.erase(cliIt);
+                    send_part((char *)(cmdJosnStr.c_str()),cmdJosnStr.length(),cliAddr);
+
+                    std::cout<<"ip = "<<cliUrl<<" is over "<<std::endl;
                     break;
                 }
                 else{
@@ -114,11 +117,7 @@ void CServerQQ::pthread_recv_and_send_msg()
             }
             std::cout<<"s_addr = "<<inet_ntoa(cliAddr.sin_addr)<<std::endl;
         }
-        // printf("port=%d\n",ntohs(cliAddr.sin_port));
 
-        // cmdJosnStr=_nowUseCmdObj->get_command_obj_json();
-
-        // send_part((char *)(cmdJosnStr.c_str()),cmdJosnStr.length(),cliAddr);
     }
 }
 int CServerQQ::run()
@@ -166,45 +165,11 @@ int CServerQQ::run()
         }
     }
 }
-int CServerQQ::recv_cmd_part(char *buf,int readNum)
+
+int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr)
 {
-    //是否开始接收，当接收到开始标志(KS_START)表示开始接收整条语句
-    static bool cmdStrOver=false;
-    static std::string tempStr="";
+    std::shared_ptr<CmdBase> useCmdObj;
 
-    if(cmdStrOver==true)
-    {
-        if (strcmp(buf,"KS_END")==0)
-        {
-            std::cout<<"tempStr cmd =  "<<tempStr.length()<<std::endl;
-            param_cmd_str(tempStr);
-
-            cmdStrOver=false;
-            tempStr="";
-        }
-        else
-        {
-            tempStr+=std::string(buf,readNum);
-        }
-    }
-    else
-    {
-        // 接收结构体
-        if(strcmp(buf,"KS_START")==0)
-        {
-            cmdStrOver=true;
-            tempStr="";
-        }
-        else
-        {
-            std::cout<<"recv from : "<<buf<<std::endl;
-        }
-    }
-    return 0;
-}
-
-int CServerQQ::param_cmd_str(std::string cmdStr)
-{
     CmdBase::CmdType childCmdType;
 
     // std::cout<<cmdStr+"\n}"<<std::endl;
@@ -212,12 +177,15 @@ int CServerQQ::param_cmd_str(std::string cmdStr)
 	cereal::JSONInputArchive jsonIA(iss);
 	jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
 
-    _nowUseCmdObj=shared_ptr<CmdBase>(_factoryCreater->create_cmd_ptr(childCmdType));
-    _nowUseCmdObj->reload_recv_obj_by_json(jsonIA);
+    useCmdObj=shared_ptr<CmdBase>(_factoryCreater->create_cmd_ptr(childCmdType));
+    useCmdObj->reload_recv_obj_by_json(jsonIA);
 
-    _nowUseCmdObj->do_command(_cmdOtlUse);
+    useCmdObj->do_command(_cmdOtlUse);
     
-    _nowUseCmdObj->show_do_command_info();
+    // useCmdObj->show_do_command_info();
+
+    returnCmdJosnStr=useCmdObj->get_command_obj_json();
+
     return 0;
 }
 void CServerQQ::Test()

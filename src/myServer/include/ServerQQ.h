@@ -39,7 +39,9 @@ public:
 
     //解析接收的字节流，转成对应对象
     //成功0，异常-1(暂时未增加)
-    int param_cmd_str(std::string cmdStr);
+    // cmdStr 客户端发送来的字符串
+    // returnCmdJosnStr 服务器端处理完毕后的字符串
+    int param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr);
 
     //发送字节流
     //成功0，异常-1
@@ -64,9 +66,6 @@ private:
     COtlUse _cmdOtlUse;
 
     std::map<string,string> _clientCmdStrMap;
-
-    //指向指令对象
-    std::shared_ptr<CmdBase> _nowUseCmdObj;
 
     std::shared_ptr<CmdCreateFactory> _factoryCreater;
 };
