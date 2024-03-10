@@ -52,4 +52,8 @@ add_executable(${MAINNAME} ${MAINFILE} ${SRC_LISTS} ${CONNECTDB} ${MYOBJINFO}
 target_link_libraries(${MAINNAME} /usr/local/psqlodbc/lib/psqlodbca.so)
 target_link_libraries(${MAINNAME} -lpthread)
 
+add_compile_options("< <<<CXX_COMPILER_ID:MSVC>:/source-charset:utf-8>")
+add_compile_options("< <<<C_COMPILER_ID:MSVC>:/source-charset:utf-8>")
+# add_compile_options(" /utf-8 ")
+
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)

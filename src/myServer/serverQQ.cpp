@@ -14,7 +14,7 @@
     这里有个好奇怪的问题，第一次启动ser时，客户端发送的KS_START，服务端可以接收到，
     但是发送不到客户端(客户端接收不到第一次发送的数据)
 */
-CServerQQ::CServerQQ():_cmdOtlUse(),_nowUseCmdObj(nullptr),_factoryCreater(nullptr){
+CServerQQ::CServerQQ():_cmdOtlUse(),_factoryCreater(nullptr){
     _clientCmdStrMap.clear();
 }
 
@@ -52,7 +52,7 @@ int CServerQQ::server_bind()
     
     return 0;
 }
-void* CServerQQ::pthread_fun(void *arg)
+void* CServerQQ::PthreadFun(void *arg)
 {
     CServerQQ *thiz=static_cast<CServerQQ *>(arg);
 
@@ -75,49 +75,47 @@ void CServerQQ::pthread_recv_and_send_msg()
     map<string,string>::iterator cliIt;
 
     cliLen=sizeof(cliAddr);
+
+    memset(&cliAddr,0,sizeof(cliAddr));
     while(1)
     {
-        memset(&cliAddr,0,sizeof(cliAddr));
-        while(1)
+        memset(buf,0,1024);
+
+        r=recvfrom(_serSoc,buf,1024,0,
+                (struct sockaddr*)&cliAddr,&cliLen);
+        if(r<0) {strcpy(_errMsg,"recvfrom error"); return ;}
+        // std::cout<<buf<<std::endl;
+        
+        cliUrl=inet_ntoa(cliAddr.sin_addr);
+        cliIt=_clientCmdStrMap.find(cliUrl);
+        
+        //第一次接收到某个客户端的数据,且为指令开始标记
+        if(cliIt==_clientCmdStrMap.end())
         {
-            memset(buf,0,1024);
-
-            r=recvfrom(_serSoc,buf,1024,0,
-                    (struct sockaddr*)&cliAddr,&cliLen);
-            if(r<0) {strcpy(_errMsg,"recvfrom error"); return ;}
-            // std::cout<<buf<<std::endl;
-            
-            cliUrl=inet_ntoa(cliAddr.sin_addr);
-            cliIt=_clientCmdStrMap.find(cliUrl);
-            
-            //第一次接收到某个客户端的数据,且为指令开始标记
-            if(cliIt==_clientCmdStrMap.end())
+            if(strcmp(buf,"KS_START")==0)
             {
-                if(strcmp(buf,"KS_START")==0)
-                {
-                    _clientCmdStrMap.insert(map<string,string>::value_type(cliUrl,""));
-                    std::cout<<"ip = "<<cliUrl<<" is start "<<std::endl;
-                }
+                _clientCmdStrMap.insert(map<string,string>::value_type(cliUrl,""));
+                std::cout<<"ip = "<<cliUrl<<" is start "<<std::endl;
             }
-            //非第一次且不为指令结束标记，那就加起来
-            else{
-                if(strcmp(buf,"KS_END")==0)
-                {                    
-                    //执行接收到的完整的指令，执行完毕后，清除掉指令
-                    param_cmd_str(cliIt->second,returnCmdJosnStr);
-                    _clientCmdStrMap.erase(cliIt);
-                    send_part((char *)(cmdJosnStr.c_str()),cmdJosnStr.length(),cliAddr);
-
-                    std::cout<<"ip = "<<cliUrl<<" is over "<<std::endl;
-                    break;
-                }
-                else{
-                    cliIt->second+=std::string(buf,r);
-                }
-            }
-            std::cout<<"s_addr = "<<inet_ntoa(cliAddr.sin_addr)<<std::endl;
         }
+        //非第一次且不为指令结束标记，那就加起来
+        else{
+            if(strcmp(buf,"KS_END")==0)
+            {                    
+                //执行接收到的完整的指令，执行完毕后，清除掉指令
+                param_cmd_str(cliIt->second,returnCmdJosnStr);
+                _clientCmdStrMap.erase(cliIt);
+                returnCmdJosnStr=
+                send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
 
+                std::cout<<"ip = "<<cliUrl<<" is over "<<std::endl;
+                break;
+            }
+            else{
+                cliIt->second+=std::string(buf,r);
+            }
+        }
+        // std::cout<<"s_addr = "<<inet_ntoa(cliAddr.sin_addr)<<std::endl;
     }
 }
 int CServerQQ::run()
@@ -157,7 +155,7 @@ int CServerQQ::run()
                 /*  设置线程为分离属性*/ 
                 pthread_attr_setdetachstate(&myThreadAttr, PTHREAD_CREATE_DETACHED);
 
-                if(pthread_create(&myThread,&myThreadAttr,pthread_fun,this))
+                if(pthread_create(&myThread,&myThreadAttr,PthreadFun,this))
                 {
                     strcpy(_errMsg,"pthread_creat error "); return -1;
                 } 
@@ -185,7 +183,6 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr)
     // useCmdObj->show_do_command_info();
 
     returnCmdJosnStr=useCmdObj->get_command_obj_json();
-
     return 0;
 }
 void CServerQQ::Test()
@@ -223,7 +220,7 @@ int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)
             sendLen=n-nowNum;
         }
         w=sendto(_serSoc,sendTemp+nowNum,sendLen,0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
-        write(1,sendTemp+nowNum,sendLen);
+        // write(1,sendTemp+nowNum,sendLen);
 
         if(w<0) {strcpy(_errMsg,"send error"); return -1;}
 

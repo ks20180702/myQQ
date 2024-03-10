@@ -16,6 +16,10 @@
 class CServerQQ
 {
 public:
+    // 由于pthread_create不能用非静态成员函数作为回调，所以套一层，该函数用于调用实际执行的成员函数
+    static void* PthreadFun(void *arg);
+
+public:
     CServerQQ();
     ~CServerQQ();
 
@@ -23,8 +27,6 @@ public:
 
     int connect_db(char *connectStr=nullptr);
 
-    // 由于pthread_create不能用非静态成员函数作为回调，所以套一层，该函数用于调用实际执行的成员函数
-    static void* pthread_fun(void *arg);
     // 线程中实际执行的函数
     void pthread_recv_and_send_msg();
 

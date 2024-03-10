@@ -24,6 +24,10 @@ int main()
     myCli.client_init("192.168.47.135");
     myCli.select_init() ;
 
+    // std::string testStr="jislkas";
+    // std::cout<<Is
+
+
     myCli.run();
     std::cout << myCli.get_error() << std::endl;
     
