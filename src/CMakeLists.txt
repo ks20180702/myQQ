@@ -23,6 +23,7 @@ set( COMMANDOBJ
     ./commandObj/cmdCreateFactory.cpp
     ./commandObj/loginCmd.cpp
     ./commandObj/userChangeCmd.cpp
+    ./commandObj/heartRequestCmd.cpp
     ./commandObj/friendshipChangeCmd.cpp)
 
 #数据库模块

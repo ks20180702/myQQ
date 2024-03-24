@@ -1,5 +1,7 @@
 #include "./include/serverQQ.h"
 
+#include "heartRequestCmd.h"
+
 #include "msg.h"
 #include <vector>
 
@@ -187,18 +189,12 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr)
 }
 void CServerQQ::Test()
 {  
-    // _cmdOtlUse.change_request_friend_type(1,2,4);
+    CUser currentUser("222222","123456","",0);
+    CHeartRequestCmd heartCmd(currentUser);
 
+    heartCmd.do_command(_cmdOtlUse);
 
-    // // 不报错，但是修改无效
-    // CUser user((char*)"121212",(char*)"123456",(char*)"add_24",23);
-    // std::cout<<_cmdOtlUse.set_user_id_by_account(user)<<std::endl;
-    // user.print();
-
-    // user.set_user_info(user.get_id(),user.get_account(),user.get_password(),
-    // (char*)"add====",23,"","2024-1-16 19:32:00");
-    // std::cout<<_cmdOtlUse.change_user(user)<<std::endl;
-    // std::cout<<_cmdOtlUse.get_errmsg()<<std::endl;
+    heartCmd.show_do_command_info();
 }
 
 int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)

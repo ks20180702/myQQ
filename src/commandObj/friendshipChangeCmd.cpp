@@ -14,21 +14,29 @@ int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
 {
     _childDoCommandReturn=false;
 
-    int dealOperRe=0;
+    int operatorReturn=0;
+    int addType=-1;
     cmdOtlUse.set_user_id_by_account(_myUser);
     cmdOtlUse.set_user_id_by_account(_friendUser);
 
-    if(_friendType==DELETT_FRIEND)
+    switch (_friendType)
     {
-        dealOperRe=cmdOtlUse.del_friendship(_myUser.get_id(),_friendUser.get_id());
-    }
-    else if(_friendType==ADD_FRIEND)
-    {
-        // dealOperRe=cmdOtlUse
-        cmdOtlUse.change_request_friend_type(_myUser.get_id(),_friendUser.get_id(),4);
+    //删除好友
+    case DELETT_FRIEND:
+        operatorReturn=cmdOtlUse.del_friendship(_myUser.get_id(),_friendUser.get_id());
+        break;
+    //发起好友申请
+    case ADD_FRIEND:
+    case ADD_FRIEND_YES:
+    case ADD_FRIEND_NO:
+        addType=static_cast<int>(_friendType);
+        operatorReturn=cmdOtlUse.change_request_friend_type(_myUser.get_id(),_friendUser.get_id(),addType);
+        break;
+    default:
+        break;
     }
 
-    if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    if(operatorReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
 
     _childDoCommandReturn=true; //执行结束
 
@@ -62,11 +70,11 @@ void CFriendshipChangeCmd::show_do_command_info()
     case ADD_FRIEND:
         std::cout<<"ADD_FRIEND = "<<ADD_FRIEND<<std::endl;
         break;
-    case ADD_FRIEND_TO_CLIENT:
-        std::cout<<"ADD_FRIEND_TO_CLIENT = "<<ADD_FRIEND_TO_CLIENT<<std::endl;
+    case ADD_FRIEND_YES:
+        std::cout<<"ADD_FRIEND_YES = "<<ADD_FRIEND_YES<<std::endl;
         break;
-    case ADD_FRIEND_TO_SERVER:
-        std::cout<<"ADD_FRIEND_TO_SERVER = "<<ADD_FRIEND_TO_SERVER<<std::endl;
+    case ADD_FRIEND_NO:
+        std::cout<<"ADD_FRIEND_NO = "<<ADD_FRIEND_YES<<std::endl;
         break;
     default:
         break;

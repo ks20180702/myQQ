@@ -20,6 +20,7 @@ public:
         DTAT_MSG_CMD,
         USER_CHANGE_CMD,
         FRIEND_SHIP_CHANGE_CMD,
+        HEART_CMD,
     };
 public:
     CmdBase(){_childDoCommandReturn=false;};

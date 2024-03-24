@@ -25,7 +25,7 @@ int main()
     CServerQQ mySer;
 
     mySer.connect_db();
-    // mySer.Test();
+    mySer.Test();
 
     if(mySer.server_bind()==-1) mySer.show_error_detail();
 

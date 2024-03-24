@@ -7,6 +7,7 @@
 #include "loginCmd.h"
 #include "otlUse.h"
 #include "userChangeCmd.h"
+#include "heartRequestCmd.h"
 #include "friendshipChangeCmd.h"
 #include "cmdCreateFactory.h"
 
@@ -37,7 +38,7 @@ public:
 
     //接收字节流
     //成功0，失败-1
-    int recv_cmd_part(char *buf,int readNum);
+    // int recv_cmd_part(char *buf,int readNum);
 
     //解析接收的字节流，转成对应对象
     //成功0，异常-1(暂时未增加)

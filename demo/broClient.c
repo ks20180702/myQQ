@@ -24,13 +24,14 @@ int main()
 
     serAddr.sin_family=AF_INET;
     serAddr.sin_port=htons(SERVER_PORT);
-    inet_pton(AF_INET,"192.168.47.135",&(serAddr.sin_addr));
+//     inet_pton(AF_INET,"192.168.47.135",&(serAddr.sin_addr));
+    inet_pton(AF_INET,"114.55.229.106",&(serAddr.sin_addr));
     // inet_pton(AF_INET,"192.168.47.255",&(serAddr.sin_addr));
     serLen=sizeof(serAddr);
 
-    //运行使用广播地址(默认创建的socket是不允许的)
-    setOptRe=setsockopt(clientSoc,SOL_SOCKET,SO_BROADCAST,&on,sizeof(on));
-    if(setOptRe==-1) K_MSG("setsockopt",-1);
+//     //运行使用广播地址(默认创建的socket是不允许的)
+//     setOptRe=setsockopt(clientSoc,SOL_SOCKET,SO_BROADCAST,&on,sizeof(on));
+//     if(setOptRe==-1) K_MSG("setsockopt",-1);
 
     strcpy(buf,"hello this is client\n");
     w=sendto(clientSoc,buf,128,0,
