@@ -1,9 +1,13 @@
 #ifndef __OTLUSE_H__
 #define __OTLUSE_H__
 
-#define OTL_ODBC // CompileOTL 4.0/ODBC  
-#define OTL_ODBC_UNIX // uncomment this line if UnixODBC is used
-//#define OTL_UNICODE // Compile OTL with Unicode    --->屏蔽 使用时中文显示乱码
+#ifdef _WIN32
+    #define OTL_ODBC_POSTGRESQL
+#else
+    #define OTL_ODBC // CompileOTL 4.0/ODBC
+    #define OTL_ODBC_UNIX // uncomment this line if UnixODBC is used
+    //#define OTL_UNICODE // Compile OTL with Unicode    --->屏蔽 使用时中文显示乱码
+#endif
 
 #include <k_total_head.h>
 #include "otlv4.h" // include the OTL 4.0 header file
