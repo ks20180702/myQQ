@@ -72,7 +72,7 @@ void CServerQQ::pthread_recv_and_send_msg()
     struct sockaddr_in cliAddr;
     socklen_t cliLen;
     size_t r,w;
-    char buf[1024]={0};
+    char buf[SEND_RECV_BUF_SIZE]={0};
     std::string returnCmdJosnStr,cliUrl;
     map<string,string>::iterator cliIt;
 
@@ -81,13 +81,12 @@ void CServerQQ::pthread_recv_and_send_msg()
     memset(&cliAddr,0,sizeof(cliAddr));
     while(1)
     {
-        memset(buf,0,1024);
+        memset(buf,0,SEND_RECV_BUF_SIZE);
 
-        r=recvfrom(_serSoc,buf,1024,0,
+        r=recvfrom(_serSoc,buf,SEND_RECV_BUF_SIZE,0,
                 (struct sockaddr*)&cliAddr,&cliLen);
         if(r<0) {strcpy(_errMsg,"recvfrom error"); return ;}
-        // std::cout<<buf<<std::endl;
-        
+
         cliUrl=inet_ntoa(cliAddr.sin_addr);
         cliIt=_clientCmdStrMap.find(cliUrl);
         
@@ -107,15 +106,12 @@ void CServerQQ::pthread_recv_and_send_msg()
                 //执行接收到的完整的指令，执行完毕后，清除掉指令
                 param_cmd_str(cliIt->second,returnCmdJosnStr);
                 _clientCmdStrMap.erase(cliIt);
-                returnCmdJosnStr=
+ 
                 send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
-
                 std::cout<<"ip = "<<cliUrl<<" is over "<<std::endl;
                 break;
             }
-            else{
-                cliIt->second+=std::string(buf,r);
-            }
+            else{cliIt->second+=std::string(buf,r);}
         }
         // std::cout<<"s_addr = "<<inet_ntoa(cliAddr.sin_addr)<<std::endl;
     }
@@ -168,20 +164,20 @@ int CServerQQ::run()
 
 int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr)
 {
+    std::cout<<cmdStr+CMD_STR_ADD<<std::endl;
+    
     std::shared_ptr<CmdBase> useCmdObj;
 
+    //设置childCmdType
     CmdBase::CmdType childCmdType;
-
-    // std::cout<<cmdStr+"\n}"<<std::endl;
-	std::istringstream iss(cmdStr+"\n}");
-	cereal::JSONInputArchive jsonIA(iss);
+	std::istringstream istrStream(cmdStr+CMD_STR_ADD);
+	cereal::JSONInputArchive jsonIA(istrStream);
 	jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
 
     useCmdObj=shared_ptr<CmdBase>(_factoryCreater->create_cmd_ptr(childCmdType));
     useCmdObj->reload_recv_obj_by_json(jsonIA);
 
     useCmdObj->do_command(_cmdOtlUse);
-    
     // useCmdObj->show_do_command_info();
 
     returnCmdJosnStr=useCmdObj->get_command_obj_json();

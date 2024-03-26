@@ -8,16 +8,13 @@ int COtlUse::olt_init(char *connectStr)
     try{
         if(nullptr ==connectStr)
         {
-            std::cout<<"lock me before"<<std::endl;
             // _db.rlogon("DSN=pgsql;UID=postgres;PWD=123456;database=myQQ"); 
             // _db.rlogon("Driver=PostgreSQL;Servername=192.168.47.135;UserName=postgres;Password=123456;Database=myQQ"); 
             _db.rlogon("Driver=PostgreSQL;Servername=114.55.229.106;UserName=postgres;Password=123456;Database=myQQ"); 
-            std::cout<<"lock me"<<std::endl;
         }
         else{
             _db.rlogon(connectStr); 
         }
-        
     }
     catch(otl_exception& p){ // intercept OTL exceptions
         strcpy(_errMsg,(char*)p.msg);

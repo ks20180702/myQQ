@@ -106,7 +106,7 @@ int ClientQQ::param_cmd_str(std::string cmdStr)
 {
     CmdBase::CmdType childCmdType;
 
-	std::istringstream iss(cmdStr+"\n}");
+	std::istringstream iss(cmdStr+CMD_STR_ADD);
 	cereal::JSONInputArchive archive(iss);
 	archive(cereal::make_nvp("_childCmdType", childCmdType));
 

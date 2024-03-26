@@ -2,6 +2,7 @@
 #include "loginCmd.h"
 #include "friendshipChangeCmd.h"
 #include "userChangeCmd.h"
+#include "heartRequestCmd.h"
 
 CmdBase* CmdCreateFactory::create_cmd_ptr(CmdBase::CmdType inputCmdType)
 {
@@ -13,6 +14,8 @@ CmdBase* CmdCreateFactory::create_cmd_ptr(CmdBase::CmdType inputCmdType)
         return new CUserChangeCmd(); 
     case(CmdBase::FRIEND_SHIP_CHANGE_CMD):
         return new CFriendshipChangeCmd(); 
+    case(CmdBase::HEART_CMD):
+        return new CHeartRequestCmd(); 
     default:
         return nullptr;
     }
