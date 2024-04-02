@@ -1,17 +1,15 @@
 #include <iostream>
 
 using namespace std;
+
 #include "user.h"
 #include "otlUse.h"
 #include "cmdBase.h"
 #include "loginCmd.h"
 #include "userChangeCmd.h"
 #include "msg.h"
-// #include "dataCmd.h"
-
-#include "userNotRecvMsg.h"
 #include "serverQQ.h"
-using namespace std;
+
 
 /*
     这里有个好奇该的问题，暂时没找到原因

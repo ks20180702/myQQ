@@ -1,6 +1,6 @@
 #include "cmdCreateFactory.h"
 #include "loginCmd.h"
-#include "dataBase.h"
+#include "dataMsgCmd.h"
 #include "friendshipChangeCmd.h"
 #include "userChangeCmd.h"
 #include "heartRequestCmd.h"
