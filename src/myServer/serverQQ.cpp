@@ -186,14 +186,19 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr)
 }
 void CServerQQ::Test()
 {  
-
     CUser currentUser("123456","123456","",0);
     CDataMsgCmd dataMsgCmd(currentUser);
     dataMsgCmd.set_msg_request_type(CDataMsgCmd::MSG_CONFIRM);
 
-    heartCmd.do_command(_cmdOtlUse);
+    std::vector<CMsg> msgDataLists;
+    CMsg testMsg(2,1,"","");
+    msgDataLists.push_back(testMsg);
+    dataMsgCmd.set_msg_data_lists(msgDataLists);
 
-    heartCmd.show_do_command_info();
+
+    dataMsgCmd.do_command(_cmdOtlUse);
+
+    dataMsgCmd.show_do_command_info();
 }
 
 int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)

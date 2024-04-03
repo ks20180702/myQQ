@@ -407,12 +407,12 @@ int COtlUse::set_msg_read_over(int recvId,int sendId)
 {
     if(_connect_on()==-1) return -1;
     try{
-        char sqlStr[128]={0};
-        sprintf(sqlStr,
-        "UPDATE msg_info_table set is_read=true where msg_to_id=%d and msg_from_id = %d ",
-        recvId,sendId);
+        char sqlStr[128]="UPDATE msg_info_table set is_read=true where msg_to_id=:msg_to_id<int> and msg_from_id=:msg_from_id<int>;";
+    
         std::cout<<sqlStr<<std::endl;
         otl_stream ostream(2, sqlStr,_db); 
+
+        otl_write_row(ostream,recvId,sendId);
         return 0;
     }
     catch(otl_exception& p)

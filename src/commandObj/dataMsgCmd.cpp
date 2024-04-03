@@ -28,7 +28,9 @@ int CDataMsgCmd::do_command(COtlUse &cmdOtlUse)
         {
             executeReturn=cmdOtlUse.set_msg_read_over((*it).get_recv_id(),(*it).get_send_id());
             if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+            std::cout<<"[MSG_CONFIRM]  is over"<<std::endl;
         }
+        
     }
     else if(MSG_SEND==_requestType)
     {
