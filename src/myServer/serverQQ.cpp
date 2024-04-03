@@ -87,7 +87,8 @@ void CServerQQ::pthread_recv_and_send_msg()
                 (struct sockaddr*)&cliAddr,&cliLen);
         if(r<0) {strcpy(_errMsg,"recvfrom error"); return ;}
 
-        cliUrl=inet_ntoa(cliAddr.sin_addr);
+        // 用ip+端口确定唯一主机
+        cliUrl=inet_ntoa(cliAddr.sin_addr)+std::to_string(cliAddr.sin_port);
         cliIt=_clientCmdStrMap.find(cliUrl);
         
         //第一次接收到某个客户端的数据,且为指令开始标记
@@ -185,8 +186,10 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr)
 }
 void CServerQQ::Test()
 {  
-    CUser currentUser("222222","123456","",0);
-    CHeartRequestCmd heartCmd(currentUser);
+
+    CUser currentUser("123456","123456","",0);
+    CDataMsgCmd dataMsgCmd(currentUser);
+    dataMsgCmd.set_msg_request_type(CDataMsgCmd::MSG_CONFIRM);
 
     heartCmd.do_command(_cmdOtlUse);
 

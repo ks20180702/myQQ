@@ -402,6 +402,25 @@ int COtlUse::add_msg(CMsg &addMsg)
 //         return -1;
 //     } 
 // }
+
+int COtlUse::set_msg_read_over(int recvId,int sendId)
+{
+    if(_connect_on()==-1) return -1;
+    try{
+        char sqlStr[128]={0};
+        sprintf(sqlStr,
+        "UPDATE msg_info_table set is_read=true where msg_to_id=%d and msg_from_id = %d ",
+        recvId,sendId);
+        std::cout<<sqlStr<<std::endl;
+        otl_stream ostream(2, sqlStr,_db); 
+        return 0;
+    }
+    catch(otl_exception& p)
+    {
+        strcpy(_errMsg,(char*)p.msg);
+        return -1;
+    } 
+}
 string COtlUse::get_errmsg()
 {
     return _errMsg;

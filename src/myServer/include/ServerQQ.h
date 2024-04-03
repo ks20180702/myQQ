@@ -8,6 +8,7 @@
 #include "otlUse.h"
 #include "userChangeCmd.h"
 #include "heartRequestCmd.h"
+#include "dataMsgCmd.h"
 #include "friendshipChangeCmd.h"
 #include "cmdCreateFactory.h"
 

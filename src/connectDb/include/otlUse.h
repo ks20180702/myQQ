@@ -93,6 +93,9 @@ public:
     // 错误-1，0成功
     // int set_msg_send(CMsg &sendMsg);
 
+    // 设置某好友的未读消息已被查看
+    // 错误-1，0成功
+    int set_msg_read_over(int recvId,int sendId);
 
     // 获取上一次操作的错误消息
     string get_errmsg();

@@ -42,7 +42,8 @@ public:
     virtual void show_do_command_info();
 
 
-    // 设置当前的接收消息的对象
+    // 设置和获取成员变量
+    void set_msg_request_type(MSG_REQUEST_TYPE requestType);
     void set_recv_user(CUser &recvUser);
     CUser get_recv_user();
     void set_msg_data_lists(std::vector<CMsg> &msgDataLists);
@@ -59,7 +60,9 @@ public:
 	}
 
 private:
-    CUser _recvUser; //接收消息的用户 
+    CUser _recvUser; //接收消息的用户
+
+    MSG_REQUEST_TYPE _requestType;
 
     std::vector<CMsg> _msgDataLists;
 };

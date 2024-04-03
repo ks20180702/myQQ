@@ -13,6 +13,30 @@ CDataMsgCmd::CDataMsgCmd(CUser &recvUser)
 
 int CDataMsgCmd::do_command(COtlUse &cmdOtlUse)
 {
+    _childDoCommandReturn=false; //开始时，执行成功标记设置为false
+
+    int existReturn,executeReturn;
+    
+    // 检查用户账号密码，
+    existReturn=cmdOtlUse.select_user_exist(_recvUser);
+    if(existReturn!=0) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+
+    if(MSG_CONFIRM==_requestType)
+    {
+        //如果发送确认消息，其实vector中只有一条包含发送者和接收者的空的消息
+        for(std::vector<CMsg>::iterator it=_msgDataLists.begin();it!=_msgDataLists.end();it++)
+        {
+            executeReturn=cmdOtlUse.set_msg_read_over((*it).get_recv_id(),(*it).get_send_id());
+            if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+        }
+    }
+    else if(MSG_SEND==_requestType)
+    {
+        
+    }
+
+
+    _childDoCommandReturn=true;
     return 0;
 }
 
@@ -38,6 +62,10 @@ void CDataMsgCmd::show_do_command_info()
 }
 
 
+void CDataMsgCmd::set_msg_request_type(MSG_REQUEST_TYPE requestType)
+{
+    _requestType=requestType;
+}
 void CDataMsgCmd::set_recv_user(CUser &recvUser)
 {
     _recvUser=recvUser;
@@ -46,7 +74,6 @@ CUser CDataMsgCmd::get_recv_user()
 {
     return _recvUser;
 }
-
 void CDataMsgCmd::set_msg_data_lists(std::vector<CMsg> &msgDataLists)
 {
     _msgDataLists=msgDataLists;
