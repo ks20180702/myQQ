@@ -13,7 +13,7 @@ CHeartRequestCmd::CHeartRequestCmd(CUser &currentUser)
 // 收到该指令时，执行预设功能
 //  1.获取该用户的好友数据，2.获取好友申请
 // 错误-1，成功0
-int CHeartRequestCmd::do_command(COtlUse &cmdOtlUse)
+CmdBase::DoCommandReturnType CHeartRequestCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
 {
     _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 
@@ -23,23 +23,23 @@ int CHeartRequestCmd::do_command(COtlUse &cmdOtlUse)
 
     // 1.检查用户账号密码，暂时还是检查一下吧，
     existRe=cmdOtlUse.select_user_exist(_currentUser);
-    if(existRe!=0) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    if(existRe!=0) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
     // 使用户的id与account保持一致(测试时自己手动创建用户，可能会不一致)，正式不会这样
     if(cmdOtlUse.set_user_id_by_account(_currentUser)==-1) 
-    {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
 
     // 2.获取该用户的好友数据
     friendNumRe=cmdOtlUse.get_user_friends(_currentUser.get_id(),_friendLists);
-    if(friendNumRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    if(friendNumRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
     std::cout<<"[I]  user have friend num = "<<friendNumRe<<std::endl;
 
     // 3.获取好友申请列表
     requestUserRe=cmdOtlUse.get_request_users(_currentUser.get_id(),_requestUserLists);
-    if(requestUserRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    if(requestUserRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
     std::cout<<"[I]  user have request friend num = "<<requestUserRe<<std::endl;
     
     _childDoCommandReturn=true;
-    return 0;
+    return NORMAL_CMD;
 }
 
 //获取当前指令对象的json字符串

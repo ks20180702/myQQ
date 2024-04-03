@@ -11,35 +11,32 @@ CDataMsgCmd::CDataMsgCmd(CUser &recvUser)
 }
 
 
-int CDataMsgCmd::do_command(COtlUse &cmdOtlUse)
+CmdBase::DoCommandReturnType CDataMsgCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
 {
     _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 
-    int existReturn,executeReturn;
-    
-    // 检查用户账号密码，
-    existReturn=cmdOtlUse.select_user_exist(_recvUser);
-    if(existReturn!=0) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    int executeReturn;
 
     if(MSG_CONFIRM==_requestType)
     {
-        //如果发送确认消息，其实vector中只有一条包含发送者和接收者的空的消息
-        for(std::vector<CMsg>::iterator it=_msgDataLists.begin();it!=_msgDataLists.end();it++)
-        {
-            executeReturn=cmdOtlUse.set_msg_read_over((*it).get_recv_id(),(*it).get_send_id());
-            if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
-            std::cout<<"[MSG_CONFIRM]  is over"<<std::endl;
-        }
-        
+        executeReturn=cmdOtlUse.set_msg_read_over(_msgData.get_recv_id(),_msgData.get_send_id());
+        if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+        std::cout<<"[MSG_CONFIRM]  is over"<<std::endl;
     }
     else if(MSG_SEND==_requestType)
     {
-        
+        //将接收到的消息入库
+        executeReturn=cmdOtlUse.add_msg(_msgData);
+        if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+        account=_recvUser.get_account(); //接收对象的账号
+
+        std::cout<<"[MSG_SEND]  is over"<<std::endl;
+
+        return RE_TREANSMISSION_CMD;
     }
 
-
     _childDoCommandReturn=true;
-    return 0;
+    return NORMAL_CMD;
 }
 
 std::string CDataMsgCmd::get_command_obj_json()
@@ -64,7 +61,7 @@ void CDataMsgCmd::show_do_command_info()
 }
 
 
-void CDataMsgCmd::set_msg_request_type(MSG_REQUEST_TYPE requestType)
+void CDataMsgCmd::set_msg_request_type(MsgRequestType requestType)
 {
     _requestType=requestType;
 }
@@ -76,15 +73,13 @@ CUser CDataMsgCmd::get_recv_user()
 {
     return _recvUser;
 }
-void CDataMsgCmd::set_msg_data_lists(std::vector<CMsg> &msgDataLists)
+void CDataMsgCmd::set_msg_data(CMsg &msgData)
 {
-    _msgDataLists=msgDataLists;
+    _msgData=msgData;
 }
-std::vector<CMsg>& CDataMsgCmd::get_msg_data_lists()
+CMsg& CDataMsgCmd::get_msg_data()
 {
-    return _msgDataLists;
+    return _msgData;
 }
 
-CDataMsgCmd::~CDataMsgCmd() {
-    _msgDataLists.clear();
-};
+CDataMsgCmd::~CDataMsgCmd() {}

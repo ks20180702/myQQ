@@ -19,7 +19,7 @@
 class CDataMsgCmd:public CmdBase
 {
 public:
-    enum MSG_REQUEST_TYPE
+    enum MsgRequestType
     {
         MSG_SEND, 
         MSG_CONFIRM, //消息确认，表示该好友间消息已查看
@@ -30,7 +30,7 @@ public:
     ~CDataMsgCmd();
 
     //执行当前指令
-    virtual int do_command(COtlUse &cmdOtlUse);
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
 
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json();
@@ -43,11 +43,11 @@ public:
 
 
     // 设置和获取成员变量
-    void set_msg_request_type(MSG_REQUEST_TYPE requestType);
+    void set_msg_request_type(MsgRequestType requestType);
     void set_recv_user(CUser &recvUser);
     CUser get_recv_user();
-    void set_msg_data_lists(std::vector<CMsg> &msgDataLists);
-    std::vector<CMsg>& get_msg_data_lists();
+    void set_msg_data(CMsg &_msgData);
+    CMsg& get_msg_data();
 
 
     //序列化
@@ -56,15 +56,16 @@ public:
 	{
 		ar(cereal::make_nvp("_childDoCommandReturn", _childDoCommandReturn),
         cereal::make_nvp("_recvUser", _recvUser),
-        cereal::make_nvp("_msgDataLists", _msgDataLists));
+        cereal::make_nvp("_msgData", _msgData));
 	}
 
 private:
     CUser _recvUser; //接收消息的用户
 
-    MSG_REQUEST_TYPE _requestType;
+    MsgRequestType _requestType;
 
-    std::vector<CMsg> _msgDataLists;
+    //发现每次好像只会发一条，考虑移除vector
+    CMsg _msgData;
 };
 
 #endif

@@ -4,7 +4,7 @@ CUserChangeCmd::CUserChangeCmd()
     :_operatorUser(){_childCmdType=USER_CHANGE_CMD;}
 
 
-int CUserChangeCmd::do_command(COtlUse &cmdOtlUse)
+CmdBase::DoCommandReturnType CUserChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
 {
     _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 
@@ -18,11 +18,10 @@ int CUserChangeCmd::do_command(COtlUse &cmdOtlUse)
         dealOperRe=cmdOtlUse.add_user(_operatorUser);
     }
 
-    if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
 
     _childDoCommandReturn=true;
-
-    return 0;
+    return NORMAL_CMD;
 }
 std::string CUserChangeCmd::get_command_obj_json()
 {

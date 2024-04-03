@@ -10,7 +10,8 @@ CFriendshipChangeCmd::CFriendshipChangeCmd(CUser &myUser,CUser &friendUser,Opera
     _friendType=friendType;
     _childCmdType=FRIEND_SHIP_CHANGE_CMD;
 }
-int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
+
+CmdBase::DoCommandReturnType CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
 {
     _childDoCommandReturn=false;
 
@@ -36,11 +37,10 @@ int CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse)
         break;
     }
 
-    if(operatorReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return -1;}
+    if(operatorReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
 
     _childDoCommandReturn=true; //执行结束
-
-    std::cout<<"do command is succeed"<<std::endl;
+    return NORMAL_CMD;
 }
 
 std::string CFriendshipChangeCmd::get_command_obj_json()

@@ -18,6 +18,7 @@
 */
 CServerQQ::CServerQQ():_cmdOtlUse(),_factoryCreater(nullptr){
     _clientCmdStrMap.clear();
+    _onlineClientMap.clear();
 }
 
 int CServerQQ::connect_db(char *connectStr)
@@ -97,7 +98,7 @@ void CServerQQ::pthread_recv_and_send_msg()
             if(strcmp(buf,"KS_START")==0)
             {
                 _clientCmdStrMap.insert(map<string,string>::value_type(cliUrl,""));
-                std::cout<<"ip = "<<cliUrl<<" is start "<<std::endl;
+                std::cout<<"recv ip = "<<cliUrl<<" is start "<<std::endl;
             }
         }
         //非第一次且不为指令结束标记，那就加起来
@@ -105,11 +106,13 @@ void CServerQQ::pthread_recv_and_send_msg()
             if(strcmp(buf,"KS_END")==0)
             {                    
                 //执行接收到的完整的指令，执行完毕后，清除掉指令
-                param_cmd_str(cliIt->second,returnCmdJosnStr);
+                param_cmd_str(cliIt->second,returnCmdJosnStr,cliAddr);
                 _clientCmdStrMap.erase(cliIt);
  
                 send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
-                std::cout<<"ip = "<<cliUrl<<" is over "<<std::endl;
+                
+                cliUrl=inet_ntoa(cliAddr.sin_addr)+std::to_string(cliAddr.sin_port);
+                std::cout<<"send ip = "<<cliUrl<<" is over "<<std::endl;
                 break;
             }
             else{cliIt->second+=std::string(buf,r);}
@@ -163,11 +166,9 @@ int CServerQQ::run()
     }
 }
 
-int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr)
+int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,struct sockaddr_in &cliAddr)
 {
     std::cout<<cmdStr+CMD_STR_ADD<<std::endl;
-    
-    std::shared_ptr<CmdBase> useCmdObj;
 
     //设置childCmdType
     CmdBase::CmdType childCmdType;
@@ -175,28 +176,48 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr)
 	cereal::JSONInputArchive jsonIA(istrStream);
 	jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
 
+    std::shared_ptr<CmdBase> useCmdObj;
     useCmdObj=shared_ptr<CmdBase>(_factoryCreater->create_cmd_ptr(childCmdType));
     useCmdObj->reload_recv_obj_by_json(jsonIA);
 
-    useCmdObj->do_command(_cmdOtlUse);
+    CmdBase::DoCommandReturnType doCommandRetrun;
+    std::string account;
+    map<string,struct sockaddr_in>::iterator acountMapIt;
+    doCommandRetrun=useCmdObj->do_command(_cmdOtlUse,account);
     // useCmdObj->show_do_command_info();
+    switch (doCommandRetrun)
+    {
+    case CmdBase::NEW_LOGIN_CMD:
+        _onlineClientMap.insert(map<string,struct sockaddr_in>::value_type(account,cliAddr));
+        break;
+    case CmdBase::RE_TREANSMISSION_CMD:
+        acountMapIt=_onlineClientMap.find(account);
+        if(acountMapIt==_onlineClientMap.end())
+        {
+            std::cout<<"this "<<account<<" not online"<<std::endl;
+            //这里其实跳过，不再发送回去比较好
+            break;
+        }
+        cliAddr=acountMapIt->second;
+        break;
+    default:
+        break;
+    }
 
     returnCmdJosnStr=useCmdObj->get_command_obj_json();
     return 0;
 }
 void CServerQQ::Test()
 {  
-    CUser currentUser("123456","123456","",0);
-    CDataMsgCmd dataMsgCmd(currentUser);
+    CUser recvUser("123456","123456","",0); //这个用户的id其实就是1
+    CDataMsgCmd dataMsgCmd(recvUser);
     dataMsgCmd.set_msg_request_type(CDataMsgCmd::MSG_CONFIRM);
 
-    std::vector<CMsg> msgDataLists;
     CMsg testMsg(2,1,"","");
-    msgDataLists.push_back(testMsg);
-    dataMsgCmd.set_msg_data_lists(msgDataLists);
+    dataMsgCmd.set_msg_data(testMsg);
 
-
-    dataMsgCmd.do_command(_cmdOtlUse);
+    std::string account;
+    dataMsgCmd.do_command(_cmdOtlUse,account);
 
     dataMsgCmd.show_do_command_info();
 }
@@ -249,4 +270,5 @@ CServerQQ::~CServerQQ()
 {
     close(_serSoc);
     _clientCmdStrMap.clear();
+    _onlineClientMap.clear();
 }

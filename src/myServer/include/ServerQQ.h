@@ -45,7 +45,7 @@ public:
     //成功0，异常-1(暂时未增加)
     // cmdStr 客户端发送来的字符串
     // returnCmdJosnStr 服务器端处理完毕后的字符串
-    int param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr);
+    int param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,struct sockaddr_in &cliAddr);
 
     //发送字节流
     //成功0，异常-1
@@ -69,7 +69,11 @@ private:
     //数据库操作对象
     COtlUse _cmdOtlUse;
 
+    //接收不同客户端消息的map
     std::map<string,string> _clientCmdStrMap;
+
+    //当前在线用户的地址
+    std::map<string,struct sockaddr_in> _onlineClientMap;
 
     std::shared_ptr<CmdCreateFactory> _factoryCreater;
 };

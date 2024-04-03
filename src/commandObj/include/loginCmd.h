@@ -25,7 +25,7 @@ public:
     // 收到该指令时，执行预设功能
     //  1.检查用户账号密码，2.获取该用户的好友数据，3.获取消息未接收情况
     // 错误-1，成功0
-    virtual int do_command(COtlUse &cmdOtlUse);
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
     
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json();

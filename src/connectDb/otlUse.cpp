@@ -370,11 +370,11 @@ int COtlUse::add_msg(CMsg &addMsg)
     if(_connect_on()==-1) return -1;
     try{
         char sqlStr[256]="INSERT into msg_info_table (msg_from_id,msg_to_id,msg_datetime,msg_content) \
-        values(:msg_from_id<int>,:msg_to_id<int>,:msg_datetime<char[32]>,:msg_content<char[511]>)";
+        values(:msg_from_id<int>,:msg_to_id<int>,now(),:msg_content<char[511]>)";
 
         std::cout<<sqlStr<<std::endl;
         otl_stream ostream(2, sqlStr,_db); 
-        ostream<<addMsg.get_send_id()<<addMsg.get_recv_id()<<addMsg.get_msg_dt()<<addMsg.get_content();
+        ostream<<addMsg.get_send_id()<<addMsg.get_recv_id()<<addMsg.get_content();
         ostream.flush();
         return 0;
     }

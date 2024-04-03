@@ -22,13 +22,21 @@ public:
         FRIEND_SHIP_CHANGE_CMD,
         HEART_CMD,
     };
+    enum DoCommandReturnType
+    {
+        NORMAL_CMD, //正常执行的指令，将处理后的指令转发回客户端
+        ERROR_CMD, //正常执行失败的指令，转发回客户端
+        NEW_LOGIN_CMD, //新登录对象的指令，将处理后的指令转发回客户端，并记录该用户的sockAddr_in对象
+        RE_TREANSMISSION_CMD, //转发指令，需要先由账号查到到对应的sockAddr_in，再发送过去
+        // NO_SEND_CMD=3, //不需要发送回客户端，直接跳过
+    };
 public:
     CmdBase(){_childDoCommandReturn=false;};
 
     virtual ~CmdBase(){};
 
     //执行当前指令
-    virtual int do_command(COtlUse &cmdOtlUse)=0;
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account)=0;
 
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json()=0;
