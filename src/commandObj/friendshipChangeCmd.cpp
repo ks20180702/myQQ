@@ -11,37 +11,39 @@ CFriendshipChangeCmd::CFriendshipChangeCmd(CUser &myUser,CUser &friendUser,Opera
     _childCmdType=FRIEND_SHIP_CHANGE_CMD;
 }
 
-CmdBase::DoCommandReturnType CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
-{
-    _childDoCommandReturn=false;
-
-    int operatorReturn=0;
-    int addType=-1;
-    cmdOtlUse.set_user_id_by_account(_myUser);
-    cmdOtlUse.set_user_id_by_account(_friendUser);
-
-    switch (_friendType)
+#ifdef SERVER_PROGRAM
+    CmdBase::DoCommandReturnType CFriendshipChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
     {
-    //删除好友
-    case DELETT_FRIEND:
-        operatorReturn=cmdOtlUse.del_friendship(_myUser.get_id(),_friendUser.get_id());
-        break;
-    //发起好友申请
-    case ADD_FRIEND:
-    case ADD_FRIEND_YES:
-    case ADD_FRIEND_NO:
-        addType=static_cast<int>(_friendType);
-        operatorReturn=cmdOtlUse.change_request_friend_type(_myUser.get_id(),_friendUser.get_id(),addType);
-        break;
-    default:
-        break;
+        _childDoCommandReturn=false;
+
+        int operatorReturn=0;
+        int addType=-1;
+        cmdOtlUse.set_user_id_by_account(_myUser);
+        cmdOtlUse.set_user_id_by_account(_friendUser);
+
+        switch (_friendType)
+        {
+        //删除好友
+        case DELETT_FRIEND:
+            operatorReturn=cmdOtlUse.del_friendship(_myUser.get_id(),_friendUser.get_id());
+            break;
+        //发起好友申请
+        case ADD_FRIEND:
+        case ADD_FRIEND_YES:
+        case ADD_FRIEND_NO:
+            addType=static_cast<int>(_friendType);
+            operatorReturn=cmdOtlUse.change_request_friend_type(_myUser.get_id(),_friendUser.get_id(),addType);
+            break;
+        default:
+            break;
+        }
+
+        if(operatorReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+
+        _childDoCommandReturn=true; //执行结束
+        return NORMAL_CMD;
     }
-
-    if(operatorReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
-
-    _childDoCommandReturn=true; //执行结束
-    return NORMAL_CMD;
-}
+#endif
 
 std::string CFriendshipChangeCmd::get_command_obj_json()
 {

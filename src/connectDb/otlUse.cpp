@@ -237,13 +237,17 @@ int COtlUse::get_user_friends(int id,vector<CUser> &friendLists)
 {
     if(_connect_on()==-1) return -1;
     try{
-        char sqlStr[512]={0};
-        char sqlFormat[512]="SELECT info.user_id,info.account,info.pwd, \
-                            info.user_name,info.user_age,info.current_ip,cast (info.last_leave_time as varchar) \
-                        FROM user_info_table as info \
-                        INNER JOIN user_friend_info_table as friend \
-                            on info.user_id=friend.user_friend_id and friend.user_id =%d";
-        sprintf(sqlStr,sqlFormat,id);
+        char sqlStr[1024]={0};
+        char sqlFormat[1024]="SELECT info.user_id,info.account,info.pwd,info.user_name,info.user_age,info.current_ip,cast (info.last_leave_time as varchar) \
+                                FROM user_info_table as info \
+                            INNER JOIN user_friend_info_table as friend \
+                                on info.user_id=friend.user_friend_id and friend.user_id =%d \
+                            UNION all \
+                            SELECT info.user_id,info.account,info.pwd,info.user_name,info.user_age,info.current_ip,cast (info.last_leave_time as varchar) \
+                                FROM user_info_table as info \
+                            INNER JOIN user_friend_info_table as friend \
+                                on info.user_id=friend.user_id and friend.user_friend_id =%d";
+        sprintf(sqlStr,sqlFormat,id,id);
         //std::cout<<sqlStr<<std::endl;
         otl_stream ostream(500, sqlStr,_db); 
 

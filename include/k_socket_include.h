@@ -21,6 +21,8 @@
     #include <unistd.h>
 #endif
 
+#define SERVER_PROGRAM
+
 #define SERVER_PORT 7070
 #define SEND_RECV_BUF_SIZE 1024
 

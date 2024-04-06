@@ -26,12 +26,13 @@ public:
     };
 public:
     CDataMsgCmd();
-    CDataMsgCmd(CUser &userRecv);
+    CDataMsgCmd(CUser &userRecv,CMsg &msgData);
     ~CDataMsgCmd();
 
+#ifdef SERVER_PROGRAM
     //执行当前指令
     virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
-
+#endif
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json();
 

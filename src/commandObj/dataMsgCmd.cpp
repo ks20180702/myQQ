@@ -4,40 +4,43 @@ CDataMsgCmd::CDataMsgCmd()
 {
     _childCmdType=DTAT_MSG_CMD;
 }
-CDataMsgCmd::CDataMsgCmd(CUser &recvUser) 
+CDataMsgCmd::CDataMsgCmd(CUser &recvUser,CMsg &msgData) 
 {
     _recvUser=recvUser;
+    _msgData=msgData;
     _childCmdType=DTAT_MSG_CMD;
 }
 
-
-CmdBase::DoCommandReturnType CDataMsgCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
-{
-    _childDoCommandReturn=false; //开始时，执行成功标记设置为false
-
-    int executeReturn;
-
-    if(MSG_CONFIRM==_requestType)
+#ifdef SERVER_PROGRAM
+    CmdBase::DoCommandReturnType CDataMsgCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
     {
-        executeReturn=cmdOtlUse.set_msg_read_over(_msgData.get_recv_id(),_msgData.get_send_id());
-        if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
-        std::cout<<"[MSG_CONFIRM]  is over"<<std::endl;
+        _childDoCommandReturn=false; //开始时，执行成功标记设置为false
+
+        int executeReturn;
+
+        if(MSG_CONFIRM==_requestType)
+        {
+            executeReturn=cmdOtlUse.set_msg_read_over(_msgData.get_recv_id(),_msgData.get_send_id());
+            if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+            std::cout<<"[MSG_CONFIRM]  is over"<<std::endl;
+            return NO_SEND_CMD;
+        }
+        else if(MSG_SEND==_requestType)
+        {
+            //将接收到的消息入库
+            executeReturn=cmdOtlUse.add_msg(_msgData);
+            if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+            account=_recvUser.get_account(); //接收对象的账号
+
+            std::cout<<"[MSG_SEND]  is over"<<std::endl;
+
+            return RE_TREANSMISSION_CMD;
+        }
+
+        _childDoCommandReturn=true;
+        return NORMAL_CMD;
     }
-    else if(MSG_SEND==_requestType)
-    {
-        //将接收到的消息入库
-        executeReturn=cmdOtlUse.add_msg(_msgData);
-        if(executeReturn==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
-        account=_recvUser.get_account(); //接收对象的账号
-
-        std::cout<<"[MSG_SEND]  is over"<<std::endl;
-
-        return RE_TREANSMISSION_CMD;
-    }
-
-    _childDoCommandReturn=true;
-    return NORMAL_CMD;
-}
+#endif
 
 std::string CDataMsgCmd::get_command_obj_json()
 {

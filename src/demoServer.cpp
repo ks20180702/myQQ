@@ -2,12 +2,6 @@
 
 using namespace std;
 
-#include "user.h"
-#include "otlUse.h"
-#include "cmdBase.h"
-#include "loginCmd.h"
-#include "userChangeCmd.h"
-#include "msg.h"
 #include "serverQQ.h"
 
 
@@ -23,7 +17,7 @@ int main()
     CServerQQ mySer;
 
     mySer.connect_db();
-    mySer.Test();
+    // mySer.Test();
 
     if(mySer.server_bind()==-1) mySer.show_error_detail();
 

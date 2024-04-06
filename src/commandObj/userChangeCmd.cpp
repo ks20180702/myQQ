@@ -3,26 +3,28 @@
 CUserChangeCmd::CUserChangeCmd()
     :_operatorUser(){_childCmdType=USER_CHANGE_CMD;}
 
-
-CmdBase::DoCommandReturnType CUserChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
-{
-    _childDoCommandReturn=false; //开始时，执行成功标记设置为false
-
-    int dealOperRe;
-    if(_operType==CHANGE_USER)
+#ifdef SERVER_PROGRAM
+    CmdBase::DoCommandReturnType CUserChangeCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
     {
-        dealOperRe=cmdOtlUse.change_user(_operatorUser);
-    }
-    else if(_operType==ADD_USER)
-    {
-        dealOperRe=cmdOtlUse.add_user(_operatorUser);
-    }
+        _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 
-    if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+        int dealOperRe;
+        if(_operType==CHANGE_USER)
+        {
+            dealOperRe=cmdOtlUse.change_user(_operatorUser);
+        }
+        else if(_operType==ADD_USER)
+        {
+            dealOperRe=cmdOtlUse.add_user(_operatorUser);
+        }
 
-    _childDoCommandReturn=true;
-    return NORMAL_CMD;
-}
+        if(dealOperRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
+
+        _childDoCommandReturn=true;
+        return NORMAL_CMD;
+    }
+#endif
+
 std::string CUserChangeCmd::get_command_obj_json()
 {
     std::ostringstream ostrStream;

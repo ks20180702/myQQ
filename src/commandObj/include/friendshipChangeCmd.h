@@ -30,9 +30,11 @@ public:
     CFriendshipChangeCmd(CUser &myUser,CUser &friendUser,OperatorFriendShipType friendType);
     ~CFriendshipChangeCmd() override;
 
+#ifdef SERVER_PROGRAM
     // 执行好友关系处理相关命令
     // 错误-1，0增加成功/修改成功
     virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
+#endif
 
     virtual std::string get_command_obj_json();
 

@@ -89,7 +89,7 @@ void CServerQQ::pthread_recv_and_send_msg()
         if(r<0) {strcpy(_errMsg,"recvfrom error"); return ;}
 
         // 用ip+端口确定唯一主机
-        cliUrl=inet_ntoa(cliAddr.sin_addr)+std::to_string(cliAddr.sin_port);
+        cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
         cliIt=_clientCmdStrMap.find(cliUrl);
         
         //第一次接收到某个客户端的数据,且为指令开始标记
@@ -111,7 +111,7 @@ void CServerQQ::pthread_recv_and_send_msg()
  
                 send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
                 
-                cliUrl=inet_ntoa(cliAddr.sin_addr)+std::to_string(cliAddr.sin_port);
+                cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
                 std::cout<<"send ip = "<<cliUrl<<" is over "<<std::endl;
                 break;
             }
@@ -210,11 +210,9 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,st
 void CServerQQ::Test()
 {  
     CUser recvUser("123456","123456","",0); //这个用户的id其实就是1
-    CDataMsgCmd dataMsgCmd(recvUser);
-    dataMsgCmd.set_msg_request_type(CDataMsgCmd::MSG_CONFIRM);
-
     CMsg testMsg(2,1,"","");
-    dataMsgCmd.set_msg_data(testMsg);
+    CDataMsgCmd dataMsgCmd(recvUser,testMsg);
+    dataMsgCmd.set_msg_request_type(CDataMsgCmd::MSG_CONFIRM);
 
     std::string account;
     dataMsgCmd.do_command(_cmdOtlUse,account);
