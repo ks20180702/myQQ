@@ -108,11 +108,14 @@ void CServerQQ::pthread_recv_and_send_msg()
                 //执行接收到的完整的指令，执行完毕后，清除掉指令
                 param_cmd_str(cliIt->second,returnCmdJosnStr,cliAddr);
                 _clientCmdStrMap.erase(cliIt);
- 
+
+                cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
+                std::cout<<"send ip = "<<cliUrl<<" is ____ "<<std::endl;
+                
+                
                 send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
                 
-                cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
-                std::cout<<"send ip = "<<cliUrl<<" is over "<<std::endl;
+
                 break;
             }
             else{cliIt->second+=std::string(buf,r);}
@@ -168,7 +171,7 @@ int CServerQQ::run()
 
 int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,struct sockaddr_in &cliAddr)
 {
-    std::cout<<cmdStr+CMD_STR_ADD<<std::endl;
+    // std::cout<<cmdStr+CMD_STR_ADD<<std::endl;
 
     //设置childCmdType
     CmdBase::CmdType childCmdType;
@@ -185,10 +188,20 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,st
     map<string,struct sockaddr_in>::iterator acountMapIt;
     doCommandRetrun=useCmdObj->do_command(_cmdOtlUse,account);
     // useCmdObj->show_do_command_info();
+
     switch (doCommandRetrun)
     {
     case CmdBase::NEW_LOGIN_CMD:
-        _onlineClientMap.insert(map<string,struct sockaddr_in>::value_type(account,cliAddr));
+        //存在则替换
+        acountMapIt=_onlineClientMap.find(account);
+        if(acountMapIt==_onlineClientMap.end())
+        {
+            _onlineClientMap.insert(map<string,struct sockaddr_in>::value_type(account,cliAddr));
+        }
+        else{
+            acountMapIt->second=cliAddr;
+        }
+        std::cout<<"[NEW] this is new user"<<std::endl;
         break;
     case CmdBase::RE_TREANSMISSION_CMD:
         acountMapIt=_onlineClientMap.find(account);
@@ -203,7 +216,7 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,st
     default:
         break;
     }
-
+    
     returnCmdJosnStr=useCmdObj->get_command_obj_json();
     return 0;
 }
@@ -225,6 +238,10 @@ int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)
     size_t w;
     char *sendTemp=sendStr;
     int nowNum=0,sendLen;
+
+    string cliUrl;
+    cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
+    std::cout<<"send ip = "<<cliUrl<<" is send part "<<std::endl;
 
     w=sendto(_serSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
     if(w<0) {strcpy(_errMsg,"send error"); return -1;}
@@ -248,6 +265,9 @@ int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)
 
     w=sendto(_serSoc,"KS_END",sizeof("KS_END"),0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
     if(w<0) {strcpy(_errMsg,"send error"); return -1;}
+
+    cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
+    std::cout<<"send ip = "<<cliUrl<<" is send over "<<std::endl;
 
     return 0;
 }
