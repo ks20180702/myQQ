@@ -72,7 +72,7 @@ private:
     //接收不同客户端消息的map
     std::map<string,string> _clientCmdStrMap;
 
-    //当前在线用户的地址
+    //当前在线用户的地址，由于端口问题，待删除
     std::map<string,struct sockaddr_in> _onlineClientMap;
 
     std::shared_ptr<CmdCreateFactory> _factoryCreater;

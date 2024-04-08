@@ -10,7 +10,7 @@ CLoginCmd::CLoginCmd(CUser &loginUser)
 } 
 
 #ifdef SERVER_PROGRAM
-    CmdBase::DoCommandReturnType CLoginCmd::do_command(COtlUse &cmdOtlUse,std::string &account)
+    CmdBase::DoCommandReturnType CLoginCmd::do_command(COtlUse &cmdOtlUse)
     {
         _childDoCommandReturn=false; //开始时，执行成功标记设置为false
 
@@ -36,10 +36,8 @@ CLoginCmd::CLoginCmd(CUser &loginUser)
         if(notRevcMsgNumRe==-1) {std::cout<<cmdOtlUse.get_errmsg()<<std::endl;return ERROR_CMD;}
         std::cout<<"[I]  user have no recv msg num = "<<notRevcMsgNumRe<<std::endl;
         
-        //获取当前用户的账号
-        account=_loginUser.get_account();
         _childDoCommandReturn=true;
-        return NEW_LOGIN_CMD;
+        return NORMAL_CMD;
     }
 #endif
 

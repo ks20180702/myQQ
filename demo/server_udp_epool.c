@@ -24,6 +24,9 @@ udp_epoll_server udp_epoll_server.c -lpthread
 #include <pthread.h>
 #include <assert.h>
 
+/*
+    udp的测试(多线程)
+*/
 
 #define MAXBUF 1024
 #define MAXEPOLLSIZE 100

@@ -55,74 +55,6 @@ int CServerQQ::server_bind()
     
     return 0;
 }
-void* CServerQQ::PthreadFun(void *arg)
-{
-    CServerQQ *thiz=static_cast<CServerQQ *>(arg);
-
-    pthread_t id = pthread_self();
-
-    thiz->pthread_recv_and_send_msg();
-    std::cout<<thiz->get_error()<<std::endl;
-
-    pthread_exit(NULL);
-
-    return NULL;
-}
-void CServerQQ::pthread_recv_and_send_msg()
-{
-    struct sockaddr_in cliAddr;
-    socklen_t cliLen;
-    size_t r,w;
-    char buf[SEND_RECV_BUF_SIZE]={0};
-    std::string returnCmdJosnStr,cliUrl;
-    map<string,string>::iterator cliIt;
-
-    cliLen=sizeof(cliAddr);
-
-    memset(&cliAddr,0,sizeof(cliAddr));
-    while(1)
-    {
-        memset(buf,0,SEND_RECV_BUF_SIZE);
-
-        r=recvfrom(_serSoc,buf,SEND_RECV_BUF_SIZE,0,
-                (struct sockaddr*)&cliAddr,&cliLen);
-        if(r<0) {strcpy(_errMsg,"recvfrom error"); return ;}
-
-        // 用ip+端口确定唯一主机
-        cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
-        cliIt=_clientCmdStrMap.find(cliUrl);
-        
-        //第一次接收到某个客户端的数据,且为指令开始标记
-        if(cliIt==_clientCmdStrMap.end())
-        {
-            if(strcmp(buf,"KS_START")==0)
-            {
-                _clientCmdStrMap.insert(map<string,string>::value_type(cliUrl,""));
-                std::cout<<"recv ip = "<<cliUrl<<" is start "<<std::endl;
-            }
-        }
-        //非第一次且不为指令结束标记，那就加起来
-        else{
-            if(strcmp(buf,"KS_END")==0)
-            {                    
-                //执行接收到的完整的指令，执行完毕后，清除掉指令
-                param_cmd_str(cliIt->second,returnCmdJosnStr,cliAddr);
-                _clientCmdStrMap.erase(cliIt);
-
-                cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
-                std::cout<<"send ip = "<<cliUrl<<" is ____ "<<std::endl;
-                
-                
-                send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
-                
-
-                break;
-            }
-            else{cliIt->second+=std::string(buf,r);}
-        }
-        // std::cout<<"s_addr = "<<inet_ntoa(cliAddr.sin_addr)<<std::endl;
-    }
-}
 int CServerQQ::run()
 {
     int kdpfd,nfds,n;
@@ -169,6 +101,69 @@ int CServerQQ::run()
     }
 }
 
+void* CServerQQ::PthreadFun(void *arg)
+{
+    CServerQQ *thiz=static_cast<CServerQQ *>(arg);
+
+    pthread_t id = pthread_self();
+
+    thiz->pthread_recv_and_send_msg();
+    std::cout<<thiz->get_error()<<std::endl;
+
+    pthread_exit(NULL);
+
+    return NULL;
+}
+void CServerQQ::pthread_recv_and_send_msg()
+{
+    struct sockaddr_in cliAddr;
+    socklen_t cliLen;
+    size_t r,w;
+    char buf[SEND_RECV_BUF_SIZE]={0};
+    std::string returnCmdJosnStr,cliUrl;
+    map<string,string>::iterator cliIt;
+
+    cliLen=sizeof(cliAddr);
+
+    memset(&cliAddr,0,sizeof(cliAddr));
+    while(1)
+    {
+        memset(buf,0,SEND_RECV_BUF_SIZE);
+
+        r=recvfrom(_serSoc,buf,SEND_RECV_BUF_SIZE,0,
+                (struct sockaddr*)&cliAddr,&cliLen);
+        if(r<0) {strcpy(_errMsg,"recvfrom error"); return ;}
+
+        // 在一次接收和发送中，可以用ip+端口确定唯一主机。(一次接收中，端口并不会变)
+        cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(ntohs(cliAddr.sin_port));
+        cliIt=_clientCmdStrMap.find(cliUrl);
+        
+        //第一次接收到某个客户端的数据,且为指令开始标记
+        if(cliIt==_clientCmdStrMap.end())
+        {
+            if(strcmp(buf,"KS_START")==0)
+            {
+                _clientCmdStrMap.insert(map<string,string>::value_type(cliUrl,""));
+                std::cout<<"recv ip = "<<cliUrl<<" is start "<<std::endl;
+            }
+        }
+        //非第一次且不为指令结束标记，那就加起来
+        else{
+            if(strcmp(buf,"KS_END")==0)
+            {                    
+                //执行接收到的完整的指令，执行完毕后，清除掉指令
+                param_cmd_str(cliIt->second,returnCmdJosnStr,cliAddr);
+                _clientCmdStrMap.erase(cliIt);
+
+                send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
+                break;
+            }
+            else{cliIt->second+=std::string(buf,r);}
+        }
+        // std::cout<<"s_addr = "<<inet_ntoa(cliAddr.sin_addr)<<std::endl;
+    }
+}
+
 int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,struct sockaddr_in &cliAddr)
 {
     // std::cout<<cmdStr+CMD_STR_ADD<<std::endl;
@@ -184,38 +179,8 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,st
     useCmdObj->reload_recv_obj_by_json(jsonIA);
 
     CmdBase::DoCommandReturnType doCommandRetrun;
-    std::string account;
-    map<string,struct sockaddr_in>::iterator acountMapIt;
-    doCommandRetrun=useCmdObj->do_command(_cmdOtlUse,account);
+    doCommandRetrun=useCmdObj->do_command(_cmdOtlUse);
     // useCmdObj->show_do_command_info();
-
-    switch (doCommandRetrun)
-    {
-    case CmdBase::NEW_LOGIN_CMD:
-        //存在则替换
-        acountMapIt=_onlineClientMap.find(account);
-        if(acountMapIt==_onlineClientMap.end())
-        {
-            _onlineClientMap.insert(map<string,struct sockaddr_in>::value_type(account,cliAddr));
-        }
-        else{
-            acountMapIt->second=cliAddr;
-        }
-        std::cout<<"[NEW] this is new user"<<std::endl;
-        break;
-    case CmdBase::RE_TREANSMISSION_CMD:
-        acountMapIt=_onlineClientMap.find(account);
-        if(acountMapIt==_onlineClientMap.end())
-        {
-            std::cout<<"this "<<account<<" not online"<<std::endl;
-            //这里其实跳过，不再发送回去比较好
-            break;
-        }
-        cliAddr=acountMapIt->second;
-        break;
-    default:
-        break;
-    }
     
     returnCmdJosnStr=useCmdObj->get_command_obj_json();
     return 0;
@@ -227,8 +192,7 @@ void CServerQQ::Test()
     CDataMsgCmd dataMsgCmd(recvUser,testMsg);
     dataMsgCmd.set_msg_request_type(CDataMsgCmd::MSG_CONFIRM);
 
-    std::string account;
-    dataMsgCmd.do_command(_cmdOtlUse,account);
+    dataMsgCmd.do_command(_cmdOtlUse);
 
     dataMsgCmd.show_do_command_info();
 }

@@ -3,7 +3,8 @@
 
 /*
     传输发送的消息的指令
-    by ks 2024-4-2
+    由于端口问题，暂时逻辑为：
+    当用户A发送给用户B时，是用户A发送给服务器端，服务器将记录存入数据库，用户B发送心跳包时，将A的消息发送回去。
 */
 
 #include "cmdBase.h"
@@ -31,7 +32,7 @@ public:
 
 #ifdef SERVER_PROGRAM
     //执行当前指令
-    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse,std::string &account);
+    virtual CmdBase::DoCommandReturnType do_command(COtlUse &cmdOtlUse);
 #endif
     //获取当前指令对象的json字符串
     virtual std::string get_command_obj_json();
@@ -64,10 +65,9 @@ public:
 private:
     CUser _recvUser; //接收消息的用户
 
-    MsgRequestType _requestType;
+    CMsg _msgData; //发送的消息
 
-    //发现每次好像只会发一条，考虑移除vector
-    CMsg _msgData;
+    MsgRequestType _requestType;
 };
 
 #endif
