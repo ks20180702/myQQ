@@ -40,7 +40,8 @@ int setnonblocking(int sockfd)
     return 0;
 }
 
-
+struct sockaddr_in other_addr_in;
+int other_num=1;
 /*
 pthread_handle_message – 线程处理 socket 上的消息收发
 */
@@ -61,16 +62,32 @@ void* pthread_handle_message(int* sock_fd)
     ret = recvfrom(new_fd, recvbuf, MAXBUF, 0, (struct sockaddr *)&client_addr, &cli_len);
     if (ret > 0)
     {
-        printf("socket %d 接收到来自:%s:%d的消息成功:’%s’，共%d个字节的数据/n",
+        printf("socket %d 接收到来自:%s:%d的消息成功:’%s’，共%d个字节的数据 \n",
         new_fd, inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), recvbuf, ret);
     }
     else
     {
-        printf("消息接收失败！错误代码是%d，错误信息是’%s’/n",
+        printf("消息接收失败！错误代码是%d，错误信息是’%s’ \n",
         errno, strerror(errno));
     }
-    /* 处理每个新连接上的数据收发结束 */ 
-    //printf("pthread exit!");
+
+    if(other_num==2)
+    {
+        client_addr.sin_port = htons(8899);
+    }
+    if(other_num==1)
+    {
+        other_addr_in=client_addr;
+        other_num=2;
+    }
+    printf("socket %d 替换到来自:%s:%d的消息成功:’%s’，共%d个字节的数据 \n",
+    new_fd, inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port), recvbuf, ret);
+
+
+    int w;
+    w=sendto(new_fd,recvbuf,MAXBUF,0,(struct sockaddr*)&client_addr,sizeof(client_addr));
+    if(w<0) {write(1,"send to error",sizeof("send to error"));}
+
     fflush(stdout); 
     pthread_exit(NULL);
 }
@@ -85,7 +102,7 @@ int main(int argc, char **argv)
     struct epoll_event events[MAXEPOLLSIZE];
     struct rlimit rt;
 
-    myport = 1234;
+    myport = 7070;
 
     pthread_t thread;
     pthread_attr_t attr;
@@ -99,7 +116,7 @@ int main(int argc, char **argv)
     }
     else 
     {
-        printf("设置系统资源参数成功！/n");
+        printf("设置系统资源参数成功！\n");
     }
     /* 开启 socket 监听 */
     if ((listener = socket(PF_INET, SOCK_DGRAM, 0)) == -1)
@@ -109,7 +126,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        printf("socket 创建成功！/n");
+        printf("socket 创建成功！\n");
     }
 
     /*设置socket属性，端口可以重用*/
@@ -128,7 +145,7 @@ int main(int argc, char **argv)
     } 
     else
     {
-        printf("IP 地址和端口绑定成功/n");
+        printf("IP 地址和端口绑定成功 \n");
     }
 
     /* 创建 epoll 句柄，把监听 socket 加入到 epoll 集合里 */
@@ -138,12 +155,12 @@ int main(int argc, char **argv)
     ev.data.fd = listener;
     if (epoll_ctl(kdpfd, EPOLL_CTL_ADD, listener, &ev) < 0) 
     {
-        fprintf(stderr, "epoll set insertion error: fd=%d/n", listener);
+        fprintf(stderr, "epoll set insertion error: fd=%d\n", listener);
         return -1;
     }
     else
     {
-        printf("监听 socket 加入 epoll 成功！/n");
+        printf("监听 socket 加入 epoll 成功！\n");
     }
 
     while (1) 

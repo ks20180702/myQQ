@@ -239,10 +239,6 @@ int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)
     char *sendTemp=sendStr;
     int nowNum=0,sendLen;
 
-    string cliUrl;
-    cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
-    std::cout<<"send ip = "<<cliUrl<<" is send part "<<std::endl;
-
     w=sendto(_serSoc,"KS_START",sizeof("KS_START"),0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
     if(w<0) {strcpy(_errMsg,"send error"); return -1;}
 
@@ -265,9 +261,6 @@ int CServerQQ::send_part(char *sendStr,int n,sockaddr_in &cliAddr)
 
     w=sendto(_serSoc,"KS_END",sizeof("KS_END"),0,(struct sockaddr*)&cliAddr,sizeof(cliAddr));
     if(w<0) {strcpy(_errMsg,"send error"); return -1;}
-
-    cliUrl=inet_ntoa(cliAddr.sin_addr)+std::string("_")+std::to_string(cliAddr.sin_port);
-    std::cout<<"send ip = "<<cliUrl<<" is send over "<<std::endl;
 
     return 0;
 }
