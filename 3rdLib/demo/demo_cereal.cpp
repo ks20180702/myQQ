@@ -63,17 +63,28 @@ int main()
 		不知道是特性，还是bug,使用fstring无误，使用ostringstream输出的字符串会缺少最后一个大括号,导致解析有误
 	*/
 	// std::ifstream file("out.json");
-	std::string testStr=ss.str()+" }";
-	std::cout<<testStr<<std::endl;
+	std::string testStr=ss.str();//+" }";
+	// std::cout<<testStr<<std::endl;
 	std::istringstream iss(testStr);
 	std::string buf;
 	int index;
-	cereal::JSONInputArchive archive1(iss);
-	archive1(cereal::make_nvp("mydata", mydata2));
-	archive1(cereal::make_nvp("mydata.index", index));
+	
+	try
+	{
+		cereal::JSONInputArchive archive1(iss);
+
+		archive1(cereal::make_nvp("mydata", mydata2));
+		archive1(cereal::make_nvp("mydata.index", index));
+	}
+	catch(const std::exception& e)
+	{
+		// cereal::RapidJSONException
+		std::cerr << e.what() << '\n';
+	}
+	
 	// archive1(cereal::make_nvp("mydata.buf", buf));
 	std::cout<<mydata2.buf<<std::endl;
-	std::cout<<index<<std::endl;
+	// std::cout<<index<<std::endl;
 }
 
 // ------------------------------------------

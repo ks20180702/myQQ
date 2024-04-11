@@ -1,4 +1,4 @@
-#include "./include/loginCmd.h"
+﻿#include "./include/loginCmd.h"
 
 CLoginCmd::CLoginCmd()
     :_loginUser(){_childCmdType=LOGIN_CMD;}
@@ -94,6 +94,38 @@ std::vector<CUser> &CLoginCmd::get_friend_lists()
 std::vector<CMsg> &CLoginCmd::get_not_recv_msg_lists()
 {
     return _notRecvMsgsLists;
+}
+std::map<int,std::vector<CMsg>> CLoginCmd::get_msg_part_account_map()
+{
+    std::map<int,std::vector<CMsg>> msgsPartAccountMap;
+    std::map<int,std::vector<CMsg>>::iterator itMsgAccout;
+    for(std::vector<CMsg>::iterator it=_notRecvMsgsLists.begin();it!=_notRecvMsgsLists.end();it++)
+    {
+        itMsgAccout=msgsPartAccountMap.find((*it).get_send_id());
+        if(itMsgAccout==msgsPartAccountMap.end())
+        {
+            std::vector<CMsg> tempMsgVector;
+            tempMsgVector.push_back((*it));
+            msgsPartAccountMap.insert(std::map<int,std::vector<CMsg>>::value_type((*it).get_send_id(),tempMsgVector));
+        }
+        else{
+            (itMsgAccout->second).push_back((*it));
+        }
+    }
+
+    return msgsPartAccountMap;
+
+#if 0
+    // show this map
+    // for(std::map<int,std::vector<CMsg>>::iterator it=_msgsPartAccountMap.begin();it!=_msgsPartAccountMap.end();it++)
+    // {
+    //     std::cout<<"id = "<<(*it).first<<std::endl;
+    //     for(std::vector<CMsg>::iterator it2=((*it).second).begin();it2!=((*it).second).end();it2++)
+    //     {
+    //         (*it2).print();
+    //     }
+    // }
+#endif
 }
 void CLoginCmd::set_friend_lists(std::vector<CUser> &friendLists)
 {
