@@ -35,7 +35,7 @@ CDataMsgCmd::CDataMsgCmd(CUser &recvUser,CMsg &msgData)
         }
 
         _childDoCommandReturn=true;
-        return NORMAL_CMD;
+        return NO_SEND_CMD;
     }
 #endif
 

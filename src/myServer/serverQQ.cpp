@@ -122,6 +122,7 @@ void CServerQQ::pthread_recv_and_send_msg()
     char buf[SEND_RECV_BUF_SIZE]={0};
     std::string returnCmdJosnStr,cliUrl;
     map<string,string>::iterator cliIt;
+    int paramReturnNum=-1;
 
     cliLen=sizeof(cliAddr);
 
@@ -152,10 +153,14 @@ void CServerQQ::pthread_recv_and_send_msg()
             if(strcmp(buf,"KS_END")==0)
             {                    
                 //执行接收到的完整的指令，执行完毕后，清除掉指令
-                param_cmd_str(cliIt->second,returnCmdJosnStr,cliAddr);
+                paramReturnNum=param_cmd_str(cliIt->second,returnCmdJosnStr,cliAddr);
                 _clientCmdStrMap.erase(cliIt);
 
-                send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
+                //执行结果0：返回客户端。1：不需要回传给客户端，-1：发生错误。
+                if(paramReturnNum==0)
+                {
+                    send_part((char *)(returnCmdJosnStr.c_str()),returnCmdJosnStr.length(),cliAddr);
+                }
                 break;
             }
             else{cliIt->second+=std::string(buf,r);}
@@ -171,16 +176,27 @@ int CServerQQ::param_cmd_str(std::string cmdStr,std::string &returnCmdJosnStr,st
     //设置childCmdType
     CmdBase::CmdType childCmdType;
 	std::istringstream istrStream(cmdStr+CMD_STR_ADD);
-	cereal::JSONInputArchive jsonIA(istrStream);
-	jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
-
     std::shared_ptr<CmdBase> useCmdObj;
-    useCmdObj=shared_ptr<CmdBase>(_factoryCreater->create_cmd_ptr(childCmdType));
-    useCmdObj->reload_recv_obj_by_json(jsonIA);
+
+    try
+    {
+        cereal::JSONInputArchive jsonIA(istrStream);
+	    jsonIA(cereal::make_nvp("_childCmdType", childCmdType));
+        
+        useCmdObj=shared_ptr<CmdBase>(_factoryCreater->create_cmd_ptr(childCmdType));
+        useCmdObj->reload_recv_obj_by_json(jsonIA);
+    }
+    catch(const std::exception& e)
+    {
+        strcpy(_errMsg,"[E]  string to obj have a error"); 
+        std::cerr << e.what() << '\n';
+        return -1;
+    }
+
 
     CmdBase::DoCommandReturnType doCommandRetrun;
     doCommandRetrun=useCmdObj->do_command(_cmdOtlUse);
-    // useCmdObj->show_do_command_info();
+    if(CmdBase::NO_SEND_CMD==doCommandRetrun) return 1;
     
     returnCmdJosnStr=useCmdObj->get_command_obj_json();
     return 0;
@@ -235,7 +251,9 @@ int& CServerQQ::get_socket()
 }
 char *CServerQQ::get_error()
 {
-    return (char*)_errMsg;
+    std::string tempErrMsg=std::string(_errMsg);
+    memset(_errMsg,0,128);
+    return (char*)tempErrMsg.c_str();
 }
 void CServerQQ::show_error_detail()
 {
