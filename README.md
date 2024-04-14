@@ -1,5 +1,5 @@
-# clientQQ
-myQQ中的客户端部分，为windows的
+# myServer
+myQQ中的服务器部分，部署在ubuntu上，数据库使用PostgreSQL
 
 
 ## 项目命名规则
